@@ -1,0 +1,61 @@
+# React Native Android Setup for Physical Device Testing
+
+Ensure to Download Android Studio on Desktop and run commands through the terminal of a new project for this to work
+
+## 1. Create a New React Native Project
+```bash
+    npx @react-native-community/cli init MyApp
+    cd MyApp
+Note: The old react-native init command is deprecated.
+
+2. Configure Android SDK
+Open Android Studio → SDK Manager → locate SDK path.
+
+Create local.properties in MyApp/android/:
+
+sdk.dir=PATH_TO_YOUR_ANDROID_SDK
+Ensure the file is named exactly local.properties (no .txt).
+
+Optionally, set ANDROID_HOME environment variable.
+
+Common Issue: Build failed due to missing SDK.
+Solution: Verified local.properties path and environment variable.
+
+3. Connect Device & Verify ADB
+Enable USB Debugging on your Android device.
+
+bash
+Copy code
+adb devices
+Device should appear in the list.
+
+Common Issue: adb not recognized.
+Solution: Add SDK platform-tools to PATH.
+
+4. Build and Run App
+bash
+Copy code
+cd android
+.\gradlew clean
+cd ..
+npx react-native run-android
+Metro bundler starts automatically.
+
+App installs and opens on device.
+
+Common Issue: Gradle version mismatch.
+Solution: Updated gradle-wrapper.properties to Gradle 8.13.
+
+5. Optional: Hot Reload
+bash
+Copy code
+npx react-native start
+Allows live updates to JS without rebuilding.
+
+Notes
+
+Replace MyApp and SDK paths with actual names.
+
+Paths must be correct and free of hidden .txt extensions.
+
+Base app is ready for adding features like touch tracking and overlays.
