@@ -1,0 +1,35 @@
+# --- Python ---
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.pdb
+
+# --- Virtual environment ---
+.venv/
+venv/
+env/
+ENV/
+*.env
+
+# --- Django specific ---
+db.sqlite3
+media/
+staticfiles/
+__pycache__/
+*.log
+
+# --- Environment variables ---
+.env
+
+# --- IDE / OS files ---
+.idea/
+.vscode/
+*.DS_Store
+Thumbs.db
+*.log
+
+# --- PyCharm specific ---
+# JetBrains project files
+*.iml
+.idea/
