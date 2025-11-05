@@ -1,0 +1,8 @@
+# Django environment variables
+DEBUG=True
+SECRET_KEY= w%)abo#^a979rh^u7l^^6c79ev3ek5ly($jfzo9mvdneq#mn@a
+
+# Database settings (default: SQLite)
+DB_ENGINE=django.db.backends.sqlite3
+DB_NAME=db.sqlite3
+
