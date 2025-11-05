@@ -1,6 +1,8 @@
-{% include 'tracker/navbar.html' %}
+{% extends "base.html" %}
 
-<main>
+{% block title %}Your Stats | HabitHatch{% endblock %}
+
+{% block content %}
   <h2 style="text-align:center; margin-bottom:1rem;">Your Usage Statistics</h2>
 
   <!-- Quick Stats Summary Boxes -->
@@ -104,4 +106,4 @@
       50% { transform: translateY(-15px); }
     }
   </style>
-</main>
+{% endblock %}

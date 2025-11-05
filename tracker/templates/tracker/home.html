@@ -1,143 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>ReelShield</title>
+{% extends "base.html" %}
+
+{% block title %}Home | HabitHatch{% endblock %}
+
+{% block content %}
+<h2>Add Time Entry</h2>
+
+<form method="POST" action="{% url 'home' %}">
+  {% csrf_token %}
+
+  <label for="platform">Platform</label>
+  <select id="platform" name="platform" required>
+    <option value="">Select Platform</option>
+    <option value="YouTube">YouTube Shorts</option>
+    <option value="TikTok">TikTok</option>
+    <option value="Instagram">Instagram Reels</option>
+    <option value="Facebook">Facebook Reels</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label for="minutes">Minutes Spent</label>
+  <input type="number" id="minutes" name="minutes" placeholder="e.g. 15" min="1" required>
+
+  <button type="submit">Add Entry</button>
+</form>
+
+{% if message %}
+  <p style="color:green; text-align:center;">{{ message }}</p>
+{% endif %}
+
+<section id="pet-preview" style="text-align:center; margin-top:2rem;">
+  <h3>Your Dopamine Pet</h3>
+  <div class="pet-preview"></div>
+  <p style="color:#475569;">Your pet looks <strong>energetic</strong> today! Keep it up!</p>
+
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background-color: #f8fafc;
-      margin: 0;
-      padding: 0;
-      color: #1e293b;
+    .pet-preview {
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle at 30% 30%, #93c5fd, #2563eb);
+      border-radius: 50%;
+      margin: 1rem auto;
+      animation: wag 2s infinite ease-in-out;
     }
 
-    nav {
-      background-color: #1e3a8a;
-      color: white;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav h1 {
-      margin: 0;
-      font-size: 1.3rem;
-    }
-
-    nav a, nav form button {
-      color: white;
-      text-decoration: none;
-      background: none;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    nav a:hover, nav form button:hover {
-      text-decoration: underline;
-    }
-
-    main {
-      max-width: 700px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: white;
-      border-radius: 1rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    }
-
-    h1, h2, h3 {
-      text-align: center;
-    }
-
-    input, select, button {
-      display: block;
-      width: 100%;
-      margin: 0.5rem 0;
-      padding: 0.6rem;
-      font-size: 1rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 0.5rem;
-    }
-
-    button {
-      background-color: #2563eb;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #1e40af;
+    @keyframes wag {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(10deg); }
+      75% { transform: rotate(-10deg); }
     }
   </style>
-</head>
-<body>
-
-  <!-- Navbar with Logout -->
-  <nav>
-    <h1>ReelShield</h1>
-    {% if user.is_authenticated %}
-      <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-      </form>
-    {% else %}
-      <a href="{% url 'login' %}">Login</a>
-    {% endif %}
-  </nav>
-
-  <main>
-    <h2>Add Time Entry</h2>
-
-    <form method="POST" action="{% url 'home' %}">
-      {% csrf_token %}
-
-      <label for="platform">Platform</label>
-      <select id="platform" name="platform" required>
-        <option value="">Select Platform</option>
-        <option value="YouTube">YouTube Shorts</option>
-        <option value="TikTok">TikTok</option>
-        <option value="Instagram">Instagram Reels</option>
-        <option value="Facebook">Facebook Reels</option>
-        <option value="Other">Other</option>
-      </select>
-
-      <label for="minutes">Minutes Spent</label>
-      <input type="number" id="minutes" name="minutes" placeholder="e.g. 15" min="1" required>
-
-      <button type="submit">Add Entry</button>
-    </form>
-
-    {% if message %}
-      <p style="color:green; text-align:center;">{{ message }}</p>
-    {% endif %}
-  </main>
-
-  <section id="pet-preview" style="text-align:center; margin-top:2rem;">
-    <h3>Your Dopamine Pet</h3>
-    <div class="pet-preview"></div>
-    <p style="color:#475569;">Your pet looks <strong>energetic</strong> today! Keep it up!</p>
-
-    <style>
-      .pet-preview {
-        width: 80px;
-        height: 80px;
-        background: radial-gradient(circle at 30% 30%, #93c5fd, #2563eb);
-        border-radius: 50%;
-        margin: 1rem auto;
-        animation: wag 2s infinite ease-in-out;
-      }
-
-      @keyframes wag {
-        0%, 100% { transform: rotate(0deg); }
-        25% { transform: rotate(10deg); }
-        75% { transform: rotate(-10deg); }
-      }
-    </style>
-  </section>
-
-</body>
-</html>
+</section>
+{% endblock %}
