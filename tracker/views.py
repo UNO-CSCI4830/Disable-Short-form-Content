@@ -3,8 +3,10 @@ import pandas as pd
 from datetime import date
 from django.conf import settings
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 # ---------- HOME PAGE ----------
+@login_required(login_url='/accounts/login/')
 def home(request):
     # Confirmed file path
     csv_path = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
@@ -43,6 +45,7 @@ def home(request):
 
 
 # ---------- STATS PAGE ----------
+@login_required(login_url='/accounts/login/')
 def stats(request):
     csv_path = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
@@ -104,6 +107,7 @@ def stats(request):
 
 
 # ---------- LEADERBOARD PAGE ----------
+@login_required(login_url='/accounts/login/')
 def leaderboard(request):
     import os
     import pandas as pd

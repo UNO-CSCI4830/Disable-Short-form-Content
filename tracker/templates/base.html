@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}ReelShield{% endblock %}</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 0;
+      color: #1e293b;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    h1, h2, h3 {
+      text-align: center;
+    }
+
+    input, select, button {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    nav {
+      background: #1e3a8a;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    nav a {
+      color: #bfdbfe;
+      margin: 0 0.5rem;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      color: #fff;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  {% include 'tracker/navbar.html' %}
+
+  <main>
+    {% block content %}
+    <!-- Page-specific content goes here -->
+    {% endblock %}
+  </main>
+
+
+  <footer>
+    <p>© 2025 ReelShield | Protecting your focus, one scroll at a time</p>
+  </footer>
+
+</body>
+</html>
