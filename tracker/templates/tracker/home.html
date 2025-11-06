@@ -1,32 +1,39 @@
 {% extends "base.html" %}
 
 {% block title %}Home | HabitHatch{% endblock %}
-
 {% block content %}
-<h2>Add Time Entry</h2>
+{% load static %}
 
-<form method="POST" action="{% url 'home' %}">
-  {% csrf_token %}
 
-  <label for="platform">Platform</label>
-  <select id="platform" name="platform" required>
-    <option value="">Select Platform</option>
-    <option value="YouTube">YouTube Shorts</option>
-    <option value="TikTok">TikTok</option>
-    <option value="Instagram">Instagram Reels</option>
-    <option value="Facebook">Facebook Reels</option>
-    <option value="Other">Other</option>
-  </select>
+<body>
 
-  <label for="minutes">Minutes Spent</label>
-  <input type="number" id="minutes" name="minutes" placeholder="e.g. 15" min="1" required>
+
+
+<main>
+  <h2>Add Time Entry</h2>
+
+  <!-- FORM 1: Add Time Entry -->
+  <form method="POST" action="{% url 'home' %}">
+    {% csrf_token %}
+    <label for="platform">Platform</label>
+    <select id="platform" name="platform" required>
+      <option value="">Select Platform</option>
+      <option value="YouTube Shorts">YouTube Shorts</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Instagram Reels">Instagram Reels</option>
+      <option value="Facebook Reels">Facebook Reels</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label for="minutes">Minutes Spent</label>
+    <input type="number" id="minutes" name="minutes" placeholder="e.g. 15" min="1" required>
 
     <button type="submit" name="add_entry">Add Entry</button>
   </form>
 
-{% if message %}
-  <p style="color:green; text-align:center;">{{ message }}</p>
-{% endif %}
+  {% if message %}
+    <p style="color:green; text-align:center;">{{ message }}</p>
+  {% endif %}
 
   <hr style="margin: 2rem 0;">
 
@@ -82,6 +89,10 @@
 </main>
 
 </body>
+
+{% if message %}
+  <p style="color:green; text-align:center;">{{ message }}</p>
+{% endif %}
 
 <section id="pet-preview" style="text-align:center; margin-top:2rem;">
   <p style="color:#475569;">Your pet looks <strong>energetic</strong> today! Keep it up!</p>
