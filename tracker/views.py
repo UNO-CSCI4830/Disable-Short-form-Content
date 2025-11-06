@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
+from django.contrib.auth.decorators import login_required
 
 # --- Helper: Calculate dopamine pet status ---
 def get_pet_stats(request):
@@ -62,6 +63,7 @@ def get_pet_stats(request):
     }
 
 
+@login_required(login_url='/accounts/login/')
 def home(request):
     """Home page — same pet state as stats."""
     message = None
@@ -89,6 +91,7 @@ def home(request):
     return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
 
 
+@login_required(login_url='/accounts/login/')
 def stats(request):
     """Stats page — displays usage summaries and dopamine pet info."""
     pet_stats = get_pet_stats(request)
@@ -115,6 +118,7 @@ def stats(request):
 
 
 # ---------- LEADERBOARD PAGE ----------
+@login_required(login_url='/accounts/login/')
 def leaderboard(request):
     import os
     import pandas as pd
