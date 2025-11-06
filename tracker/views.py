@@ -151,3 +151,11 @@ def leaderboard(request):
 
     return render(request, 'tracker/leaderboard.html', {'leaderboard': leaderboard})
 
+
+# ---------- RESOURCES PAGE ----------
+@login_required(login_url='/accounts/login/')
+def resources(request):
+    context = {
+        "hi": 7
+    }
+    return render(request, 'tracker/resources.html', context)
