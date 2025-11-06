@@ -1,106 +1,117 @@
 import os
 import pandas as pd
-from datetime import date
+from datetime import date, datetime, timedelta
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-# ---------- HOME PAGE ----------
+CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
+
+
+# --- Helper: Calculate dopamine pet status ---
+def get_pet_stats(request):
+    """Unified logic for dopamine pet display and progress calculation."""
+    focus_platform = request.session.get("focus_platform", None)
+    points = request.session.get("points", 0)
+    daily_avg = 0
+
+    if not os.path.exists(CSV_PATH):
+        pd.DataFrame(columns=['Date', 'Platform', 'Minutes']).to_csv(CSV_PATH, index=False)
+
+    df = pd.read_csv(CSV_PATH)
+
+    if not df.empty and "Platform" in df.columns and focus_platform:
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        one_week_ago = datetime.now() - timedelta(days=7)
+        recent = df[df["Date"] >= one_week_ago]
+        focus_df = recent[recent["Platform"] == focus_platform]
+
+        if not focus_df.empty:
+            daily_avg = focus_df.groupby("Date")["Minutes"].sum().mean()
+
+            # Award points if average < 60 min/day
+            if daily_avg < 60:
+                points += 10
+                request.session["points"] = points
+                request.session.modified = True
+
+    # Evolution logic
+    if points >= 100:
+        pet_image = "tracker/assets/dragon_pet_final.png"
+        evolution_stage = "Final Evolution 🐉"
+        progress = 100
+    elif points >= 40:
+        pet_image = "tracker/assets/dragon_pet_adult.png"
+        evolution_stage = "Stage 3 Evolution"
+        progress = ((points - 40) / 60) * 100
+    elif points >= 20:
+        pet_image = "tracker/assets/dragon_pet_teen.png"
+        evolution_stage = "Stage 2 Evolution"
+        progress = ((points - 20) / 20) * 100
+    else:
+        pet_image = "tracker/assets/dragon_pet_egg.png"
+        evolution_stage = "Baby Dragon 🐣"
+        progress = (points / 20) * 100
+
+    return {
+        "focus_platform": focus_platform,
+        "daily_avg": round(daily_avg, 2),
+        "points": points,
+        "evolution_stage": evolution_stage,
+        "progress": round(progress, 2),
+        "pet_image": pet_image,
+    }
+
+
 def home(request):
-    # Confirmed file path
-    csv_path = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
+    """Home page — same pet state as stats."""
+    message = None
+    focus_message = None
 
-    # Ensure CSV file exists with headers
-    if not os.path.exists(csv_path):
-        pd.DataFrame(columns=['Date', 'Platform', 'Minutes']).to_csv(csv_path, index=False)
+    if request.method == "POST":
+        if 'set_focus' in request.POST:
+            focus_platform = request.POST.get("focus_platform")
+            if focus_platform:
+                request.session["focus_platform"] = focus_platform
+                focus_message = f"Focus platform set to {focus_platform}!"
+            else:
+                focus_message = "No focus platform selected."
+        elif 'add_entry' in request.POST:
+            platform = request.POST.get("platform")
+            minutes = request.POST.get("minutes")
+            if platform and minutes:
+                df = pd.read_csv(CSV_PATH)
+                new_row = {"Date": date.today().isoformat(), "Platform": platform, "Minutes": int(minutes)}
+                df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+                df.to_csv(CSV_PATH, index=False)
+                message = f"Added {minutes} minutes for {platform}!"
 
-    if request.method == 'POST':
-        platform = request.POST.get('platform')
-        minutes = request.POST.get('minutes')
-
-        print(f"Received POST data: Platform={platform}, Minutes={minutes}")  # debug line
-        print(f"Writing to: {csv_path}")  # debug line
-
-        if platform and minutes:
-            new_row = {
-                'Date': date.today().isoformat(),
-                'Platform': platform,
-                'Minutes': int(minutes)
-            }
-
-            try:
-                df = pd.DataFrame([new_row])
-                df.to_csv(csv_path, mode='a', header=False, index=False)
-                print("Successfully wrote to CSV file.")
-            except Exception as e:
-                print(f"Error writing CSV: {e}")
-
-            return render(request, 'tracker/home.html', {
-                'message': f"Added {minutes} minutes for {platform}!"
-            })
-
-    # Default: GET request
-    return render(request, 'tracker/home.html')
+    pet_stats = get_pet_stats(request)
+    return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
 
 
-# ---------- STATS PAGE ----------
 def stats(request):
-    csv_path = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
+    """Stats page — displays usage summaries and dopamine pet info."""
+    pet_stats = get_pet_stats(request)
 
-    # If CSV missing or empty, show default placeholders
-    if not os.path.exists(csv_path) or os.path.getsize(csv_path) == 0:
-        context = {
-            'total_minutes': 0,
-            'most_used': "N/A",
-            'avg_daily': 0,
-            'chart_labels': [],
-            'chart_values': [],
-        }
-        return render(request, 'tracker/stats.html', context)
+    # --- Load usage data for summary cards ---
+    total_minutes, most_used, avg_daily = 0, "N/A", 0
+    if os.path.exists(CSV_PATH):
+        df = pd.read_csv(CSV_PATH)
+        if not df.empty and "Minutes" in df.columns:
+            df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
+            total_minutes = int(df["Minutes"].sum())
+            avg_daily = round(df.groupby("Date")["Minutes"].sum().mean(), 2)
+            if "Platform" in df.columns and not df["Platform"].empty:
+                most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
 
-    try:
-        # Read CSV safely
-        df = pd.read_csv(csv_path)
+    context = {
+        **pet_stats,
+        "total_minutes": total_minutes,
+        "most_used": most_used,
+        "avg_daily": avg_daily,
+    }
 
-        # Fix missing headers if needed
-        expected_cols = ['Date', 'Platform', 'Minutes']
-        if list(df.columns) != expected_cols:
-            df.columns = expected_cols[:len(df.columns)]
-
-        # --- Stats Calculations ---
-        total_minutes = df['Minutes'].sum()
-        most_used = (
-            df.groupby('Platform')['Minutes']
-              .sum()
-              .sort_values(ascending=False)
-              .idxmax()
-        )
-        avg_daily = round(df.groupby('Date')['Minutes'].sum().mean(), 1)
-
-        # --- Chart Data ---
-        totals = df.groupby('Platform')['Minutes'].sum().sort_values(ascending=False)
-        chart_labels = list(totals.index)
-        chart_values = list(totals.values)
-
-        context = {
-            'total_minutes': total_minutes,
-            'most_used': most_used,
-            'avg_daily': avg_daily,
-            'chart_labels': chart_labels,
-            'chart_values': chart_values,
-        }
-
-    except Exception as e:
-        print(f"Error generating stats: {e}")
-        context = {
-            'total_minutes': 0,
-            'most_used': "N/A",
-            'avg_daily': 0,
-            'chart_labels': [],
-            'chart_values': [],
-        }
-
-    return render(request, 'tracker/stats.html', context)
-
+    return render(request, "tracker/stats.html", context)   
 
 
 # ---------- LEADERBOARD PAGE ----------
