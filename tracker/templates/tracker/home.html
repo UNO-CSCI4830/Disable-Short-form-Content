@@ -1,36 +1,100 @@
 {% extends "base.html" %}
 
 {% block title %}Home | HabitHatch{% endblock %}
-
 {% block content %}
-<h2>Add Time Entry</h2>
+{% load static %}
 
-<form method="POST" action="{% url 'home' %}">
-  {% csrf_token %}
 
-  <label for="platform">Platform</label>
-  <select id="platform" name="platform" required>
-    <option value="">Select Platform</option>
-    <option value="YouTube">YouTube Shorts</option>
-    <option value="TikTok">TikTok</option>
-    <option value="Instagram">Instagram Reels</option>
-    <option value="Facebook">Facebook Reels</option>
-    <option value="Other">Other</option>
-  </select>
+<body>
 
-  <label for="minutes">Minutes Spent</label>
-  <input type="number" id="minutes" name="minutes" placeholder="e.g. 15" min="1" required>
 
-  <button type="submit">Add Entry</button>
-</form>
+
+<main>
+  <h2>Add Time Entry</h2>
+
+  <!-- FORM 1: Add Time Entry -->
+  <form method="POST" action="{% url 'home' %}">
+    {% csrf_token %}
+    <label for="platform">Platform</label>
+    <select id="platform" name="platform" required>
+      <option value="">Select Platform</option>
+      <option value="YouTube Shorts">YouTube Shorts</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Instagram Reels">Instagram Reels</option>
+      <option value="Facebook Reels">Facebook Reels</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <label for="minutes">Minutes Spent</label>
+    <input type="number" id="minutes" name="minutes" placeholder="e.g. 15" min="1" required>
+
+    <button type="submit" name="add_entry">Add Entry</button>
+  </form>
+
+  {% if message %}
+    <p style="color:green; text-align:center;">{{ message }}</p>
+  {% endif %}
+
+  <hr style="margin: 2rem 0;">
+
+  <!-- FORM 2: Set Focus Platform -->
+  <h2>Set Focus Platform (Optional)</h2>
+  <form method="POST" action="{% url 'home' %}">
+    {% csrf_token %}
+    <label for="focus_platform">Focus Platform (want to reduce)</label>
+    <select id="focus_platform" name="focus_platform">
+      <option value="">Select Focus Platform</option>
+      <option value="YouTube Shorts">YouTube Shorts</option>
+      <option value="TikTok">TikTok</option>
+      <option value="Instagram Reels">Instagram Reels</option>
+      <option value="Facebook Reels">Facebook Reels</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <button type="submit" name="set_focus">Set Focus Platform</button>
+  </form>
+
+  <!--------------------------Dopamine Pet ----------------------------->
+  {% if focus_message %}
+    <p style="color:blue; text-align:center;">{{ focus_message }}</p>
+  {% endif %}
+
+  {% if current_focus %}
+    <p style="text-align:center;">Current Focus Platform: <strong>{{ current_focus }}</strong></p>
+  {% endif %}
+
+  <hr style="margin: 2rem 0;">
+<h2 style="text-align:center;">Your Dopamine Pet</h2>
+
+{% if focus_platform %}
+  <div class="focus-stats">
+    <h3>Focus Platform: {{ focus_platform }}</h3>
+    <p>Average Daily Usage: {{ daily_avg }} min/day</p>
+    <p>Points: {{ points }}</p>
+    <p>Stage: {{ evolution_stage }}</p>
+
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: {{ progress }}%;"></div>
+    </div>
+
+    <div class="pet-container" style="display: flex; justify-content: center; align-items: center; margin-top: 1rem;">
+      <img src="{% static 'dragon_pet_egg.png' %}" alt="Dopamine Pet" class="pet-avatar">
+    </div>
+  </div>
+{% else %}
+  <div class="focus-stats">
+    <p style="text-align:center;">No Focus Platform Selected — set one above to start tracking!</p>
+  </div>
+{% endif %}
+</main>
+
+</body>
 
 {% if message %}
   <p style="color:green; text-align:center;">{{ message }}</p>
 {% endif %}
 
 <section id="pet-preview" style="text-align:center; margin-top:2rem;">
-  <h3>Your Dopamine Pet</h3>
-  <div class="pet-preview"></div>
   <p style="color:#475569;">Your pet looks <strong>energetic</strong> today! Keep it up!</p>
 
   <style>
@@ -41,6 +105,17 @@
       border-radius: 50%;
       margin: 1rem auto;
       animation: wag 2s infinite ease-in-out;
+    }
+    .pet-avatar {
+      width: 300px;
+      height: auto;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
     }
 
     @keyframes wag {
