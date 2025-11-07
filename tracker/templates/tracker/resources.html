@@ -3,176 +3,240 @@
 {% block title %}Resources | HabitHatch{% endblock %}
 
 {% block content %}
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f5f5f5;
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth;
-}
+  <h2 style="text-align:center; margin-bottom:1rem;">Resources</h2>
 
-/* ==== TABLE OF CONTENTS ==== */
-#toc {
-  background-color: #222;
-  color: white;
-  padding: 30px;
-  text-align: center;
-  border-bottom: 3px solid orange;
-}
+  <div class="resources-container">
+    <!-- ==== TABLE OF CONTENTS ==== -->
+    <div id="toc" class="toc-card">
+      <h3>Table of Contents</h3>
+      <div class="toc-grid">
+        <a href="#source1">Source #1</a>
+        <a href="#source2">Source #2</a>
+        <a href="#source3">Source #3</a>
+        <a href="#source4">Source #4</a>
+        <a href="#source5">Source #5</a>
+        <a href="#source6">Source #6</a>
+        <a href="#source7">Source #7</a>
+        <a href="#source8">Source #8</a>
+        <a href="#source9">Source #9</a>
+        <a href="#source10">Source #10</a>
+        <a href="#source11">Source #11</a>
+        <a href="#source12">Source #12</a>
+        <a href="#source13">Source #13</a>
+        <a href="#source14">Source #14</a>
+        <a href="#source15">Source #15</a>
+        <a href="#source16">Source #16</a>
+      </div>
+    </div>
 
-#toc h2 {
-  margin-bottom: 25px;
-  color: orange;
-}
-
-.toc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 15px;
-  justify-items: center;
-  max-width: 950px;
-  margin: 0 auto;
-}
-
-.toc-grid a {
-  display: inline-block;
-  background-color: #333;
-  color: orange;
-  text-decoration: none;
-  padding: 12px 0;
-  border-radius: 8px;
-  width: 100%;
-  font-weight: bold;
-  font-size: 15px;
-  border: 2px solid transparent;
-  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.toc-grid a:hover {
-  background-color: orange;
-  color: white;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Active button color (after click) */
-.toc-grid a.active-btn {
-  background-color: #CAAB82 !important;
-  color: black !important;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
-}
-
-/* ==== RESOURCE BOXES ==== */
-.resource-box {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  margin: 40px auto;
-  width: 85%;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: background-color 0.8s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.resource-box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-}
-
-/* Highlight on click */
-.resource-box.active {
-  background-color: #ddd;
-}
-
-.resource-box h3 {
-  color: orange;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-}
-
-.back-to-top {
-  display: inline-block;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #007bff;
-  text-decoration: none;
-}
-
-.back-to-top:hover {
-  text-decoration: underline;
-}
-</style>
-
-<!-- ==== TABLE OF CONTENTS ==== -->
-<div id="toc">
-  <h2>Table of Contents</h2>
-  <div class="toc-grid">
-    <a href="#source1">Source #1</a>
-    <a href="#source2">Source #2</a>
-    <a href="#source3">Source #3</a>
-    <a href="#source4">Source #4</a>
-    <a href="#source5">Source #5</a>
-    <a href="#source6">Source #6</a>
-    <a href="#source7">Source #7</a>
-    <a href="#source8">Source #8</a>
-    <a href="#source9">Source #9</a>
-    <a href="#source10">Source #10</a>
-    <a href="#source11">Source #11</a>
-    <a href="#source12">Source #12</a>
-    <a href="#source13">Source #13</a>
-    <a href="#source14">Source #14</a>
-    <a href="#source15">Source #15</a>
+    <!-- ==== RESOURCE SECTIONS ==== -->
+    <div id="source1" class="resource-box"><h3>Source #1</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source2" class="resource-box"><h3>Source #2</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source3" class="resource-box"><h3>Source #3</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source4" class="resource-box"><h3>Source #4</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source5" class="resource-box"><h3>Source #5</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source6" class="resource-box"><h3>Source #6</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source7" class="resource-box"><h3>Source #7</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source8" class="resource-box"><h3>Source #8</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source9" class="resource-box"><h3>Source #9</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source10" class="resource-box"><h3>Source #10</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source11" class="resource-box"><h3>Source #11</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source12" class="resource-box"><h3>Source #12</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source13" class="resource-box"><h3>Source #13</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source14" class="resource-box"><h3>Source #14</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source15" class="resource-box"><h3>Source #15</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source16" class="resource-box"><h3>Source #16</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
   </div>
-</div>
 
-<!-- ==== RESOURCE SECTIONS ==== -->
-<div id="source1" class="resource-box"><h3>Source #1</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source2" class="resource-box"><h3>Source #2</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source3" class="resource-box"><h3>Source #3</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source4" class="resource-box"><h3>Source #4</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source5" class="resource-box"><h3>Source #5</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source6" class="resource-box"><h3>Source #6</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source7" class="resource-box"><h3>Source #7</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source8" class="resource-box"><h3>Source #8</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source9" class="resource-box"><h3>Source #9</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source10" class="resource-box"><h3>Source #10</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source11" class="resource-box"><h3>Source #11</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source12" class="resource-box"><h3>Source #12</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source13" class="resource-box"><h3>Source #13</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source14" class="resource-box"><h3>Source #14</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-<div id="source15" class="resource-box"><h3>Source #15</h3><p>Add info here.</p><a href="#toc" class="back-to-top">↑ Back to top</a></div>
-
-<!-- ==== JAVASCRIPT ==== -->
-<script>
-const tocLinks = document.querySelectorAll('.toc-grid a');
-const boxes = document.querySelectorAll('.resource-box');
-
-tocLinks.forEach(link => {
-  link.addEventListener('click', () => {
-    // remove all highlights first
-    boxes.forEach(box => box.classList.remove('active'));
-    tocLinks.forEach(l => l.classList.remove('active-btn'));
-
-    // find target block
-    const targetId = link.getAttribute('href').substring(1);
-    const targetBox = document.getElementById(targetId);
-
-    if (targetBox) {
-      // add gray highlight to source box
-      setTimeout(() => {
-        targetBox.classList.add('active');
-        setTimeout(() => targetBox.classList.remove('active'), 2000);
-      }, 400);
+  <style>
+    body {
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
     }
 
-    // highlight button color for 1 minute (60000 ms)
-    link.classList.add('active-btn');
-    setTimeout(() => {
-      link.classList.remove('active-btn');
-    }, 60000);
+    .resources-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* ==== TOC CARD ==== */
+    .toc-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .toc-card h3 {
+      color: #2563EB;
+      margin-bottom: 1rem;
+    }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      justify-items: center;
+    }
+
+    .toc-grid a {
+      background-color: #2563eb;
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 0;
+      border-radius: 8px;
+      width: 100%;
+      font-weight: 500;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .toc-grid a:hover {
+      background-color: #1e40af;
+      transform: translateY(-2px);
+    }
+
+    .toc-grid a.active-btn {
+      background-color: #D9E5FF !important;
+      color: black !important;
+    }
+
+    /* ==== RESOURCE BOX ==== */
+    .resource-box {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1rem 1.5rem;
+      scroll-margin-top: 30px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.8s ease;
+    }
+
+    .resource-box:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .resource-box.active {
+      background-color: black;
+      color: white;
+    }
+
+    .resource-box.active h3 {
+      color: white;
+    }
+
+    .resource-box.active .back-to-top {
+      background-color: white;
+      color: black;
+    }
+
+    .resource-box h3 {
+      color: #2563eb;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+  .back-to-top {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 20px;
+    color: white;
+    background-color: #2563eb;
+    padding: 0px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .back-to-top:hover {
+    background-color: #1e40af;
+    transform: translateY(-1px);
+  }
+  </style>
+
+<script>
+  const tocLinks = document.querySelectorAll('.toc-grid a');
+  const backButtons = document.querySelectorAll('.back-to-top');
+  const boxes = document.querySelectorAll('.resource-box');
+
+  // === CUSTOMIZATION OPTIONS ===
+  const scrollSettings = {
+    duration: 750,          // scroll duration in ms
+    delay: 100,             // time before highlighting box (ms)
+    activeDuration: 2000    // how long box stays highlighted (ms)
+  };
+
+  // === CUSTOM SMOOTH SCROLL FUNCTION (with easing) ===
+  function smoothScrollTo(targetY, duration) {
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    let startTime = null;
+
+    function animation(currentTime) {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // smoother ease-in-out curve
+      const ease = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      window.scrollTo(0, startY + distance * ease);
+
+      if (elapsed < duration) requestAnimationFrame(animation);
+    }
+
+    requestAnimationFrame(animation);
+  }
+
+  // === HELPER TO HANDLE SCROLL + HIGHLIGHT ===
+  function handleSmoothScroll(event, link, highlight = false) {
+    event.preventDefault();
+    const targetId = link.getAttribute('href').substring(1);
+    const targetBox = document.getElementById(targetId);
+    if (!targetBox) return;
+
+    let offset = highlight ? 25 : 130; // smaller number = closer to top
+    const targetY = targetBox.getBoundingClientRect().top + window.scrollY - offset;
+    smoothScrollTo(targetY, scrollSettings.duration);
+
+    if (highlight) {
+      // clear existing highlights
+      boxes.forEach(box => box.classList.remove('active'));
+      tocLinks.forEach(l => l.classList.remove('active-btn'));
+
+      // add highlight
+      setTimeout(() => {
+        targetBox.classList.add('active');
+        setTimeout(() => targetBox.classList.remove('active'), scrollSettings.activeDuration);
+      }, scrollSettings.delay);
+
+      // temporary active button color
+      link.classList.add('active-btn');
+      setTimeout(() => link.classList.remove('active-btn'), 60000);
+    }
+  }
+
+  // === TOC LINKS (scroll to source) ===
+  tocLinks.forEach(link => {
+    link.addEventListener('click', (event) => {
+      handleSmoothScroll(event, link, true);
+    });
   });
-});
+
+  // === BACK BUTTONS (scroll to top / TOC) ===
+  backButtons.forEach(btn => {
+    btn.addEventListener('click', (event) => {
+      handleSmoothScroll(event, btn, false);
+    });
+  });
 </script>
 
 {% endblock %}
