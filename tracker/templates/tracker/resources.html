@@ -4,17 +4,22 @@
 
 {% block content %}
   <h2 style="text-align:center; margin-bottom:1rem;">Resources</h2>
-
+<div class="resource-box" id="recommended">
+  <h3>Recommended</h3>
+  <p id="recText">Our newest curated resource to help with habit building and focus.</p>
+  <button class="rec-btn" id="recBtn">Add Info</button>
+</div>
   <div class="resources-container">
+
     <!-- ==== TABLE OF CONTENTS ==== -->
     <div id="toc" class="toc-card">
       <h3>Table of Contents</h3>
       <div class="toc-grid">
-        <a href="#source1">Source #1</a>
-        <a href="#source2">Source #2</a>
-        <a href="#source3">Source #3</a>
-        <a href="#source4">Source #4</a>
-        <a href="#source5">Source #5</a>
+        <a href="#source1">Tiktok</a>
+        <a href="#source2">YouTube</a>
+        <a href="#source3">Instagram</a>
+        <a href="#source4">Facebook</a>
+        <a href="#source5">General Media</a>
         <a href="#source6">Source #6</a>
         <a href="#source7">Source #7</a>
         <a href="#source8">Source #8</a>
@@ -30,11 +35,11 @@
     </div>
 
     <!-- ==== RESOURCE SECTIONS ==== -->
-    <div id="source1" class="resource-box"><h3>Source #1</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
-    <div id="source2" class="resource-box"><h3>Source #2</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
-    <div id="source3" class="resource-box"><h3>Source #3</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
-    <div id="source4" class="resource-box"><h3>Source #4</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
-    <div id="source5" class="resource-box"><h3>Source #5</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source1" class="resource-box"><h3>Tiktok Help</h3><p><a href="https://endscreenaddiction.com/blog/how-to-stop-scrolling-on-tiktok-and-reclaim-your-time/"> Tiktok </a></p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source2" class="resource-box"><h3>YouTube Help</h3><p><a href="https://www.verywellmind.com/youtube-addiction-signs-causes-effects-and-treatment-5222236"> YouTube </a></p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source3" class="resource-box"><h3>Instagram Help</h3><p><a href="https://www.asclique.com/blog/how-to-disable-reels-on-instagram/"> Instagram </a></p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source4" class="resource-box"><h3>Facebook Help</h3><p><a href="https://wallhabit.com/blog/how-to-quit-reels-forever/"> Facebook </a></p><a href="#toc" class="back-to-top">🡠</a></div>
+    <div id="source5" class="resource-box"><h3>General Short Form Media Help</h3><p><a href="https://shinseungkeon.com/en/escaping-short-form-addiction/"> Media </a></p><a href="#toc" class="back-to-top">🡠</a></div>
     <div id="source6" class="resource-box"><h3>Source #6</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
     <div id="source7" class="resource-box"><h3>Source #7</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
     <div id="source8" class="resource-box"><h3>Source #8</h3><p>Add info here.</p><a href="#toc" class="back-to-top">🡠</a></div>
@@ -53,6 +58,14 @@
       background-color: #f5f5f5;
       margin: 0;
       padding: 0;
+    }
+
+    .rec-btn {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .rec-btn:hover {
+    transform: translateY(-2px);
     }
 
     .resources-container {
@@ -141,26 +154,60 @@
       margin-bottom: 10px;
     }
 
-  .back-to-top {
-    display: inline-block;
-    margin-top: 10px;
-    font-size: 20px;
-    color: white;
-    background-color: #2563eb;
-    padding: 0px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
+    .back-to-top {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 20px;
+      color: white;
+      background-color: #2563eb;
+      padding: 0px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
 
-  .back-to-top:hover {
-    background-color: #1e40af;
-    transform: translateY(-1px);
-  }
+    .back-to-top:hover {
+      background-color: #1e40af;
+      transform: translateY(-1px);
+    }
   </style>
 
 <script>
+  let x = "{{most_used}}";
+  const button = document.getElementById("recBtn");
+  const text = document.getElementById("recText");
+  const section = document.getElementById("recommended");
+
+  if ("{{all_equal}}" === "True" || x === "Other") {
+    button.textContent = "General Short Form Media Help";
+    button.onclick = () => window.location.href = "https://shinseungkeon.com/en/escaping-short-form-addiction/";
+    text.textContent = "No";
+    }
+  else if (x === "TikTok") {
+    button.textContent = "TikTok Help";
+    button.onclick = () => window.location.href = "https://endscreenaddiction.com/blog/how-to-stop-scrolling-on-tiktok-and-reclaim-your-time/";
+    text.textContent = "Hello";
+  }
+  else if (x === "YouTube Shorts") {
+    button.textContent = "YouTube Help";
+    button.onclick = () => window.location.href = "https://www.verywellmind.com/youtube-addiction-signs-causes-effects-and-treatment-5222236";
+    text.textContent = "CYA";
+  }
+  else if (x === "Instagram Reels") {
+    button.textContent = "Instagram Help";
+    button.onclick = () => window.location.href = "https://www.asclique.com/blog/how-to-disable-reels-on-instagram/";
+    text.textContent = "GoodBye";
+  }
+  else if (x === "Facebook Reels") {
+    button.textContent = "FaceBook Reels Help";
+    button.onclick = () => window.location.href = "https://wallhabit.com/blog/how-to-quit-reels-forever/";
+    text.textContent = "Yellow";
+  }
+  else {
+    section.style.display = "none";
+  }
+
   const tocLinks = document.querySelectorAll('.toc-grid a');
   const backButtons = document.querySelectorAll('.back-to-top');
   const boxes = document.querySelectorAll('.resource-box');
@@ -203,7 +250,7 @@
     const targetBox = document.getElementById(targetId);
     if (!targetBox) return;
 
-    let offset = highlight ? 25 : 130; // smaller number = closer to top
+    let offset = highlight ? 25 : 20; // smaller number = closer to top
     const targetY = targetBox.getBoundingClientRect().top + window.scrollY - offset;
     smoothScrollTo(targetY, scrollSettings.duration);
 

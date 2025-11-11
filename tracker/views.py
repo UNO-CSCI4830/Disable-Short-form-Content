@@ -114,7 +114,7 @@ def stats(request):
         "avg_daily": avg_daily,
     }
 
-    return render(request, "tracker/stats.html", context)   
+    return render(request, "tracker/stats.html", context)
 
 
 # ---------- LEADERBOARD PAGE ----------
@@ -155,7 +155,24 @@ def leaderboard(request):
 # ---------- RESOURCES PAGE ----------
 @login_required(login_url='/accounts/login/')
 def resources(request):
+    most_used = "N/A"
+    platform_minutes = {}
+    all_equal = False
+    if os.path.exists(CSV_PATH):
+        df = pd.read_csv(CSV_PATH)
+        if not df.empty and "Minutes" in df.columns:
+            if "Platform" in df.columns and not df["Platform"].empty:
+                most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
+                platform_minutes = (
+                    df.groupby("Platform")["Minutes"]
+                    .sum()
+                    .sort_values(ascending=False)
+                    .to_dict()
+                )
+                if len(set(platform_minutes.values())) == 1:
+                    all_equal = True
     context = {
-        "hi": 7
+        "most_used": most_used,
+        "all_equal": all_equal,
     }
     return render(request, 'tracker/resources.html', context)
