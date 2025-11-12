@@ -158,6 +158,7 @@ def resources(request):
     most_used = "N/A"
     platform_minutes = {}
     all_equal = False
+
     if os.path.exists(CSV_PATH):
         df = pd.read_csv(CSV_PATH)
         if not df.empty and "Minutes" in df.columns:
@@ -169,8 +170,10 @@ def resources(request):
                     .sort_values(ascending=False)
                     .to_dict()
                 )
-                if len(set(platform_minutes.values())) == 1:
-                    all_equal = True
+
+                non_other_vals = [v for k, v in platform_minutes.items() if str(k).strip().lower() != "other"]
+                all_equal = len(non_other_vals) >= 2 and len(set(non_other_vals)) == 1
+
     context = {
         "most_used": most_used,
         "all_equal": all_equal,
