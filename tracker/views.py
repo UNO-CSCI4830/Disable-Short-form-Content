@@ -8,6 +8,7 @@ CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
 from django.contrib.auth.decorators import login_required
 
+
 # --- Helper: Calculate dopamine pet status ---
 def get_pet_stats(request):
     """Unified logic for dopamine pet display and progress calculation."""
@@ -178,4 +179,5 @@ def resources(request):
         "most_used": most_used,
         "all_equal": all_equal,
     }
-    return render(request, 'tracker/resources.html', context)
+
+    return render(request, "tracker/resources.html", context)
