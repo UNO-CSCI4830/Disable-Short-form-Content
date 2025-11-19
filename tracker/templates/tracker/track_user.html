@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Track a User | HabitHatch{% endblock %}
+
+{% block content %}
+
+<h2 style="text-align:center; margin-bottom:1rem;">Track Another User</h2>
+
+<p style="text-align:center; max-width:500px; margin:auto; color:#475569;">
+  Enter a friend's <strong>Tracking Code</strong> to view their usage stats and pet progress.
+</p>
+
+<!-- Code Entry Form -->
+<form method="POST" action="{% url 'track_user' %}" style="margin-top:2rem;">
+    {% csrf_token %}
+
+    <label for="tracking_code">Tracking Code</label>
+    <input type="text"
+           id="tracking_code"
+           name="tracking_code"
+           placeholder="e.g. HX9F-28QK"
+           required>
+
+    <button type="submit">View User</button>
+</form>
+
+<!-- Display error or success messages -->
+{% if error %}
+  <p style="text-align:center; color:#dc2626; margin-top:1rem;">{{ error }}</p>
+{% endif %}
+
+{% if user_data %}
+  <hr style="margin:2rem 0;">
+
+  <h3 style="text-align:center;">User Summary</h3>
+
+  <div style="
+      display:flex;
+      justify-content:center;
+      gap:2rem;
+      margin-top:1.5rem;
+      flex-wrap:wrap;
+  ">
+      <div style="
+          background:#2563eb;
+          color:white;
+          padding:1rem 1.5rem;
+          border-radius:0.8rem;
+          text-align:center;
+          width:180px;
+      ">
+          <h4>Total Time</h4>
+          <p>{{ user_data.total_minutes }} min</p>
+      </div>
+
+      <div style="
+          background:#2563eb;
+          color:white;
+          padding:1rem 1.5rem;
+          border-radius:0.8rem;
+          text-align:center;
+          width:180px;
+      ">
+          <h4>Favorite Platform</h4>
+          <p>{{ user_data.top_platform }}</p>
+      </div>
+
+      <div style="
+          background:#2563eb;
+          color:white;
+          padding:1rem 1.5rem;
+          border-radius:0.8rem;
+          text-align:center;
+          width:180px;
+      ">
+          <h4>Pet Mood</h4>
+          <p>{{ user_data.pet_mood }}</p>
+      </div>
+  </div>
+
+{% endif %}
+
+{% endblock %}

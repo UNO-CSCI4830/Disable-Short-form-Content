@@ -6,4 +6,5 @@ urlpatterns = [
     path('stats/', views.stats, name='stats'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path("track-user/", views.track_user, name="track_user"),
 ]

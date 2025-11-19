@@ -3,6 +3,8 @@ import pandas as pd
 from datetime import date, datetime, timedelta
 from django.conf import settings
 from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from .models import UserProfile, TimeEntry
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
@@ -151,3 +153,26 @@ def leaderboard(request):
 
     return render(request, 'tracker/leaderboard.html', {'leaderboard': leaderboard})
 
+def track_user(request):
+    context = {}
+    share_code = request.GET.get("code", "").strip().upper()
+
+    if share_code:
+        try:
+            profile = UserProfile.objects.get(share_code=share_code)
+            target_user = profile.user
+            entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
+
+            total_minutes = sum(e.minutes for e in entries)
+
+            context.update({
+                "found": True,
+                "target_user": target_user,
+                "entries": entries,
+                "total_minutes": total_minutes,
+            })
+
+        except UserProfile.DoesNotExist:
+            context["error"] = "No user found with that share code."
+
+    return render(request, "tracker/track_user.html", context)

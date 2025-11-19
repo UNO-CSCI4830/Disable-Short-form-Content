@@ -7,7 +7,22 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  position: relative;
 ">
+
+  <!-- Share Code (top right) -->
+  {% if user.is_authenticated and user.userprofile %}
+    <div style="
+      position: absolute;
+      right: 1rem;
+      top: 0.8rem;
+      font-size: 0.9rem;
+      color: #bfdbfe;
+    ">
+      Code: <strong>{{ user.userprofile.share_code }}</strong>
+    </div>
+  {% endif %}
+
   <!-- App Title -->
   <h1 style="
     font-size: 2rem;
@@ -15,10 +30,30 @@
     margin: 0 0 1rem 0;
     letter-spacing: 1px;
   ">
-    HabitHatch
+    Welcome to HabitHatch
   </h1>
 
   <!-- Navigation Buttons -->
+  <div style="
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  ">
+  </div>
+    <!-- Auth Button (Right Corner) -->
+  <div style="
+    position: absolute;
+    right: 1rem;
+    top: 1.5rem;
+  ">
+    {% if user.is_authenticated %}
+      <form method="post" action="{% url 'logout' %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="nav-btn logout-btn">Logout</button>
+      </form>
+    {% endif %}
+  </div>
 
   <style>
     .nav-btn {
@@ -47,4 +82,5 @@
       }
     }
   </style>
+
 </nav>

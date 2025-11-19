@@ -9,6 +9,20 @@
   text-align: center;
   position: relative;
 ">
+
+
+  <!-- Share Code (top right) -->
+  {% if user.is_authenticated and user.userprofile %}
+    <div style="
+      position: absolute;
+      right: 1rem;
+      top: 0.8rem;
+      font-size: 0.9rem;
+      color: #bfdbfe;
+    ">
+      Code: <strong>{{ user.userprofile.share_code }}</strong>
+    </div>
+  {% endif %}
   <!-- App Title -->
   <h1 style="
     font-size: 2rem;
@@ -30,6 +44,7 @@
     <a href="{% url 'home' %}" class="nav-btn">Home</a>
     <a href="{% url 'stats' %}" class="nav-btn">Stats</a>
     <a href="{% url 'leaderboard' %}" class="nav-btn">Leaderboard</a>
+      <a href="{% url 'track_user' %}" class="nav-btn">Track Users</a>
   </div>
 
   <!-- Auth Button (Right Corner) -->
@@ -43,8 +58,6 @@
         {% csrf_token %}
         <button type="submit" class="nav-btn logout-btn">Logout</button>
       </form>
-    {% else %}
-      <a href="{% url 'login' %}" class="nav-btn logout-btn">Login</a>
     {% endif %}
   </div>
 
