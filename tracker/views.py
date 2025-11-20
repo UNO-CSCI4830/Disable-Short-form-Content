@@ -84,7 +84,7 @@ def home(request):
             minutes = request.POST.get("minutes")
             if platform and minutes:
                 df = pd.read_csv(CSV_PATH)
-                new_row = {"Date": date.today().isoformat(), "Platform": platform, "Minutes": int(minutes)}
+                new_row = {"UserCode": str(request.user.userprofile.share_code),"Date": date.today().isoformat(), "Platform": platform, "Minutes": int(minutes)}
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                 df.to_csv(CSV_PATH, index=False)
                 message = f"Added {minutes} minutes for {platform}!"
