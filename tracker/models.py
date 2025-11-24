@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+from django.urls import reverse
 
 
 class UserProfile(models.Model):
@@ -13,7 +14,30 @@ class UserProfile(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.user.username
+        return f"{self.user.username} Profile"
+
+
+    def regenerate_share_code(self):
+        """Force-generate a new share code."""
+        self.share_code = uuid.uuid4().hex[:12].upper()
+        self.save()
+        return self.share_code
+
+    def get_share_url(self):
+        return reverse("share-page", kwargs={"share_code": self.share_code})
+
+    def as_dict(self):
+        return {
+            "username": self.user.username,
+            "email": self.user.email,
+            "share_code": self.share_code,
+        }
+
+    def is_complete(self): #check for share_code in account
+        return bool(self.share_code and self.user.username)
+
+
+
 
 
 class TimeEntry(models.Model):
