@@ -10,6 +10,7 @@ CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
 from django.contrib.auth.decorators import login_required
 
+
 # --- Helper: Calculate dopamine pet status ---
 def get_pet_stats(request):
     """Unified logic for dopamine pet display and progress calculation."""
@@ -17,13 +18,24 @@ def get_pet_stats(request):
     points = request.session.get("points", 0)
     daily_avg = 0
 
+    # Ensure CSV exists with correct columns
     if not os.path.exists(CSV_PATH):
-        pd.DataFrame(columns=['Date', 'Platform', 'Minutes']).to_csv(CSV_PATH, index=False)
+        pd.DataFrame(columns=['Code', 'Date', 'Platform', 'Minutes']).to_csv(CSV_PATH, index=False)
 
     df = pd.read_csv(CSV_PATH)
+    if "Code" not in df.columns:
+        df["Code"] = ""  # default empty
+        df.to_csv(CSV_PATH, index=False)
+    # Get current user's share code
+    profile = UserProfile.objects.get(user=request.user)
+    share_code = profile.share_code
+
+    # Filter CSV to only this user's entries
+    df = df[df["Code"] == share_code]
 
     if not df.empty and "Platform" in df.columns and focus_platform:
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+
         one_week_ago = datetime.now() - timedelta(days=7)
         recent = df[df["Date"] >= one_week_ago]
         focus_df = recent[recent["Platform"] == focus_platform]
@@ -42,14 +54,17 @@ def get_pet_stats(request):
         pet_image = "tracker/assets/dragon_pet_final.png"
         evolution_stage = "Final Evolution 🐉"
         progress = 100
+
     elif points >= 40:
         pet_image = "tracker/assets/dragon_pet_adult.png"
         evolution_stage = "Stage 3 Evolution"
         progress = ((points - 40) / 60) * 100
+
     elif points >= 20:
         pet_image = "tracker/assets/dragon_pet_teen.png"
         evolution_stage = "Stage 2 Evolution"
         progress = ((points - 20) / 20) * 100
+
     else:
         pet_image = "tracker/assets/dragon_pet_egg.png"
         evolution_stage = "Baby Dragon 🐣"
@@ -65,13 +80,20 @@ def get_pet_stats(request):
     }
 
 
+
 @login_required(login_url='/accounts/login/')
 def home(request):
     """Home page — same pet state as stats."""
     message = None
     focus_message = None
 
+    # Ensure CSV exists
+    if not os.path.exists(CSV_PATH):
+        pd.DataFrame(columns=['Code', 'Date', 'Platform', 'Minutes']).to_csv(CSV_PATH, index=False)
+
     if request.method == "POST":
+
+        # ----- SET FOCUS -----
         if 'set_focus' in request.POST:
             focus_platform = request.POST.get("focus_platform")
             if focus_platform:
@@ -79,18 +101,38 @@ def home(request):
                 focus_message = f"Focus platform set to {focus_platform}!"
             else:
                 focus_message = "No focus platform selected."
+
+        # ----- ADD USAGE ENTRY -----
         elif 'add_entry' in request.POST:
             platform = request.POST.get("platform")
             minutes = request.POST.get("minutes")
+
             if platform and minutes:
                 df = pd.read_csv(CSV_PATH)
-                new_row = {"Date": date.today().isoformat(), "Platform": platform, "Minutes": int(minutes)}
+                if "Code" not in df.columns:
+                    df["Code"] = ""  # default empty
+                    df.to_csv(CSV_PATH, index=False)
+
+                # Get current user's share code
+                profile = UserProfile.objects.get(user=request.user)
+                share_code = profile.share_code
+
+                new_row = {
+                    "Code": share_code,
+                    "Date": date.today().isoformat(),
+                    "Platform": platform,
+                    "Minutes": int(minutes)
+                }
+
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
                 df.to_csv(CSV_PATH, index=False)
+
                 message = f"Added {minutes} minutes for {platform}!"
 
     pet_stats = get_pet_stats(request)
     return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
+
+
 
 
 @login_required(login_url='/accounts/login/')
@@ -98,15 +140,23 @@ def stats(request):
     """Stats page — displays usage summaries and dopamine pet info."""
     pet_stats = get_pet_stats(request)
 
-    # --- Load usage data for summary cards ---
     total_minutes, most_used, avg_daily = 0, "N/A", 0
+
     if os.path.exists(CSV_PATH):
         df = pd.read_csv(CSV_PATH)
-        if not df.empty and "Minutes" in df.columns:
+
+        # Filter to current user's data
+        profile = UserProfile.objects.get(user=request.user)
+        share_code = profile.share_code
+        df = df[df["Code"] == share_code]
+
+        if not df.empty:
             df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
+
             total_minutes = int(df["Minutes"].sum())
             avg_daily = round(df.groupby("Date")["Minutes"].sum().mean(), 2)
-            if "Platform" in df.columns and not df["Platform"].empty:
+
+            if "Platform" in df.columns:
                 most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
 
     context = {
@@ -116,20 +166,18 @@ def stats(request):
         "avg_daily": avg_daily,
     }
 
-    return render(request, "tracker/stats.html", context)   
+    return render(request, "tracker/stats.html", context)
+
 
 
 # ---------- LEADERBOARD PAGE ----------
 @login_required(login_url='/accounts/login/')
 def leaderboard(request):
-    import os
     import pandas as pd
-    from django.conf import settings
 
-    csv_path = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
+    csv_path = CSV_PATH
 
     try:
-        # Try reading CSV safely
         if os.path.getsize(csv_path) == 0:
             raise pd.errors.EmptyDataError("CSV is empty")
 
@@ -137,14 +185,16 @@ def leaderboard(request):
 
         if df.empty:
             leaderboard = []
+
         else:
-            # Group and rank data
+            # Leaderboard: rank users by total minutes
             leaderboard_data = (
-                df.groupby('Platform', as_index=False)['Minutes']
+                df.groupby('Code', as_index=False)['Minutes']
                 .sum()
                 .sort_values('Minutes', ascending=True)
                 .reset_index(drop=True)
             )
+
             leaderboard_data['Rank'] = leaderboard_data.index + 1
             leaderboard = leaderboard_data.to_dict(orient='records')
 
@@ -152,6 +202,9 @@ def leaderboard(request):
         leaderboard = []
 
     return render(request, 'tracker/leaderboard.html', {'leaderboard': leaderboard})
+
+
+
 
 def track_user(request):
     context = {}
@@ -161,8 +214,8 @@ def track_user(request):
         try:
             profile = UserProfile.objects.get(share_code=share_code)
             target_user = profile.user
-            entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
 
+            entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
             total_minutes = sum(e.minutes for e in entries)
 
             context.update({
