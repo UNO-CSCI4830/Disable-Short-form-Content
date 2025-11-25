@@ -5,6 +5,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .models import UserProfile, TimeEntry
+from .petLogic import *
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
@@ -50,32 +51,14 @@ def get_pet_stats(request):
                 request.session.modified = True
 
     # Evolution logic
-    if points >= 100:
-        pet_image = "tracker/assets/dragon_pet_final.png"
-        evolution_stage = "Final Evolution 🐉"
-        progress = 100
-
-    elif points >= 40:
-        pet_image = "tracker/assets/dragon_pet_adult.png"
-        evolution_stage = "Stage 3 Evolution"
-        progress = ((points - 40) / 60) * 100
-
-    elif points >= 20:
-        pet_image = "tracker/assets/dragon_pet_teen.png"
-        evolution_stage = "Stage 2 Evolution"
-        progress = ((points - 20) / 20) * 100
-
-    else:
-        pet_image = "tracker/assets/dragon_pet_egg.png"
-        evolution_stage = "Baby Dragon 🐣"
-        progress = (points / 20) * 100
+    pet_image, evolution_stage, progress = return_pet_info(1, points)
 
     return {
         "focus_platform": focus_platform,
         "daily_avg": round(daily_avg, 2),
         "points": points,
         "evolution_stage": evolution_stage,
-        "progress": round(progress, 2),
+        "progress": progress,
         "pet_image": pet_image,
     }
 
@@ -106,6 +89,10 @@ def home(request):
         elif 'add_entry' in request.POST:
             platform = request.POST.get("platform")
             minutes = request.POST.get("minutes")
+            date_input = request.POST.get("date")
+
+            if not date_input:
+                date_input =  date.today().isoformat()
 
             if platform and minutes:
                 df = pd.read_csv(CSV_PATH)
@@ -119,7 +106,7 @@ def home(request):
 
                 new_row = {
                     "Code": share_code,
-                    "Date": date.today().isoformat(),
+                    "Date": date_input,
                     "Platform": platform,
                     "Minutes": int(minutes)
                 }
