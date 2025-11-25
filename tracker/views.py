@@ -5,6 +5,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .models import UserProfile, TimeEntry
+from tracker.visuals import (get_platform_summary, get_weekly_trend,get_total_wasted_time)
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
