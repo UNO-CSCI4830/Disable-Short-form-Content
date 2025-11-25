@@ -96,28 +96,49 @@ def home(request):
 
 @login_required(login_url='/accounts/login/')
 def stats(request):
-    """Stats page — displays usage summaries and dopamine pet info."""
     pet_stats = get_pet_stats(request)
 
-    # --- Load usage data for summary cards ---
     total_minutes, most_used, avg_daily = 0, "N/A", 0
+    platform_labels, platform_data = [], []
+    trend_labels, trend_data = [], []
+
     if os.path.exists(CSV_PATH):
         df = pd.read_csv(CSV_PATH)
-        if not df.empty and "Minutes" in df.columns:
+
+        # Filter to current user's data
+        profile = UserProfile.objects.get(user=request.user)
+        share_code = profile.share_code
+        df = df[df["Code"] == share_code]
+
+        if not df.empty:
             df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
+
+            # existing stats
             total_minutes = int(df["Minutes"].sum())
             avg_daily = round(df.groupby("Date")["Minutes"].sum().mean(), 2)
-            if "Platform" in df.columns and not df["Platform"].empty:
+
+            if "Platform" in df.columns:
                 most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
+
+            # NEW chart logic
+            platform_labels, platform_data = get_platform_summary(df)
+            trend_labels, trend_data = get_weekly_trend(df)
 
     context = {
         **pet_stats,
         "total_minutes": total_minutes,
         "most_used": most_used,
         "avg_daily": avg_daily,
+
+        # NEW visualization context
+        "platform_labels": platform_labels,
+        "platform_data": platform_data,
+        "trend_labels": trend_labels,
+        "trend_data": trend_data,
     }
 
-    return render(request, "tracker/stats.html", context)   
+    return render(request, "tracker/stats.html", context)
+
 
 
 # ---------- LEADERBOARD PAGE ----------
