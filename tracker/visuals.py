@@ -40,10 +40,10 @@ def get_weekly_trend(df):
 
     if recent.empty:
         return [], []
-        
-    recent = recent.sort_values("Date")  
 
-    daily = recent.groupby("Date")["Minutes"].sum().reset_index()
+    # Group and sort
+    daily = recent.groupby("Date", as_index=False)["Minutes"].sum()
+    daily = daily.sort_values(by="Date")  # oldest first
 
     labels = daily["Date"].dt.strftime("%m/%d").tolist()
     data = daily["Minutes"].tolist()
