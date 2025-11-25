@@ -21,18 +21,54 @@
     </div>
   </div>
 
-  <!-- Chart Placeholders -->
-  <section class="charts">
+<!-- Chart Placeholders -->
+<section class="charts">
+
     <div class="chart-card">
-      <h3>Time Spent per Platform</h3>
-      <canvas id="platformChart"></canvas>
+        <h3>Time Spent per Platform</h3>
+        <canvas id="platformChart"></canvas>
     </div>
 
     <div class="chart-card">
-      <h3>Weekly Trend</h3>
-      <canvas id="weeklyTrend"></canvas>
+        <h3>Weekly Trend</h3>
+        <canvas id="weeklyTrend"></canvas>
     </div>
 
+    <!-- ChartJS scripts should be AFTER the canvas elements -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        /* ---------- Platform Bar Chart ---------- */
+        const platformCtx = document.getElementById('platformChart');
+        new Chart(platformCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ platform_labels|safe }},
+                datasets: [{
+                    label: 'Minutes',
+                    data: {{ platform_data|safe }},
+                    borderWidth: 1
+                }]
+            }
+        });
+
+        /* ---------- Weekly Trend Line Chart ---------- */
+        const trendCtx = document.getElementById('weeklyTrend');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: {{ trend_labels|safe }},
+                datasets: [{
+                    label: 'Minutes per Day',
+                    data: {{ trend_data|safe }},
+                    tension: 0.3,
+                    borderWidth: 2
+                }]
+            }
+        });
+    </script>
+
+</section>
 
 
 {% if focus_platform %}
@@ -72,8 +108,6 @@
       {% endif %}
     </p>
   </div>
-  
-</section>
 
   <style>
     main {
