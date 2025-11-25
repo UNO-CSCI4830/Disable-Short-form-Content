@@ -1,5 +1,5 @@
 import pandas as pd
-import visuals
+from tracker import visuals
 
 def test_platform_summary_basic():
     df = pd.DataFrame({
