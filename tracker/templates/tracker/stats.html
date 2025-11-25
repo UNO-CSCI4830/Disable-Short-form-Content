@@ -26,47 +26,58 @@
 
     <div class="chart-card">
         <h3>Time Spent per Platform</h3>
-        <canvas id="platformChart"></canvas>
+        {% if platform_labels %}
+            <canvas id="platformChart"></canvas>
+        {% else %}
+            <p style="color:gray;">No platform data available.</p>
+        {% endif %}
     </div>
 
     <div class="chart-card">
         <h3>Weekly Trend</h3>
-        <canvas id="weeklyTrend"></canvas>
+        {% if trend_labels %}
+            <canvas id="weeklyTrend"></canvas>
+        {% else %}
+            <p style="color:gray;">No weekly trend data available.</p>
+        {% endif %}
     </div>
 
     <!-- ChartJS scripts should be AFTER the canvas elements -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% if platform_labels or trend_labels %}
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            {% if platform_labels %}
+                const platformCtx = document.getElementById('platformChart');
+                new Chart(platformCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ platform_labels|safe }},
+                        datasets: [{
+                            label: 'Minutes',
+                            data: {{ platform_data|safe }},
+                            borderWidth: 1
+                        }]
+                    }
+                });
+            {% endif %}
 
-    <script>
-        /* ---------- Platform Bar Chart ---------- */
-        const platformCtx = document.getElementById('platformChart');
-        new Chart(platformCtx, {
-            type: 'bar',
-            data: {
-                labels: {{ platform_labels|safe }},
-                datasets: [{
-                    label: 'Minutes',
-                    data: {{ platform_data|safe }},
-                    borderWidth: 1
-                }]
-            }
-        });
-
-        /* ---------- Weekly Trend Line Chart ---------- */
-        const trendCtx = document.getElementById('weeklyTrend');
-        new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: {{ trend_labels|safe }},
-                datasets: [{
-                    label: 'Minutes per Day',
-                    data: {{ trend_data|safe }},
-                    tension: 0.3,
-                    borderWidth: 2
-                }]
-            }
-        });
-    </script>
+            {% if trend_labels %}
+                const trendCtx = document.getElementById('weeklyTrend');
+                new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: {{ trend_labels|safe }},
+                        datasets: [{
+                            label: 'Minutes per Day',
+                            data: {{ trend_data|safe }},
+                            tension: 0.3,
+                            borderWidth: 2
+                        }]
+                    }
+                });
+            {% endif %}
+        </script>
+    {% endif %}
 
 </section>
 
