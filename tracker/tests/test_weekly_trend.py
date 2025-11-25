@@ -5,9 +5,10 @@ from tracker import visuals
 def test_weekly_trend_basic():
     today = datetime.now()
     df = pd.DataFrame({
-        "Date": [today - timedelta(days=i) for i in range(3)],
+        "Date": [today - timedelta(days=i) for i in reversed(range(3))],  # reversed!
         "Minutes": [10, 20, 30]
     })
+
 
     labels, data = visuals.get_weekly_trend(df)
 
