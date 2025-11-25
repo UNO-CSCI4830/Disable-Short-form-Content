@@ -40,38 +40,10 @@ def get_weekly_trend(df):
 
     if recent.empty:
         return [], []
+        
+    recent = recent.sort_values("Date")  
 
     daily = recent.groupby("Date")["Minutes"].sum().reset_index()
-
-    def get_weekly_trend(df):
-    """
-    Prepare last 7 days usage data for line charts.
-    Fully edge-case safe.
-    """
-    if df is None or df.empty or "Date" not in df.columns:
-        return [], []
-
-    # Coerce invalid dates to NaT
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
-    df = df.dropna(subset=["Date"])
-
-    if df.empty:
-        return [], []
-
-    last_week = datetime.now() - timedelta(days=7)
-    recent = df[df["Date"] >= last_week]
-
-    if recent.empty:
-        return [], []
-
-    recent = recent.sort_values("Date") 
-
-    daily = recent.groupby("Date")["Minutes"].sum().reset_index()
-
-    labels = daily["Date"].dt.strftime("%m/%d").tolist()
-    data = daily["Minutes"].tolist()
-
-    return labels, data
 
     labels = daily["Date"].dt.strftime("%m/%d").tolist()
     data = daily["Minutes"].tolist()
