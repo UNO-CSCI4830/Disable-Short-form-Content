@@ -1,6 +1,6 @@
 import pandas as pd
 from datetime import datetime, timedelta
-import visuals
+from tracker import visuals
 
 def test_weekly_trend_basic():
     today = datetime.now()
