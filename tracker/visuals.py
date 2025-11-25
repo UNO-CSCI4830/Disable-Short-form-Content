@@ -5,28 +5,36 @@ from datetime import datetime, timedelta
 def get_platform_summary(df):
     """
     Prepare platform usage totals for bar charts.
-    Returns (labels, data) lists.
+    Fully edge-case safe.
     """
-    if df.empty or "Platform" not in df.columns:
+    if df is None or df.empty:
         return [], []
 
+    if not {"Platform", "Minutes"}.issubset(df.columns):
+        return [], []
+
+    # Convert Minutes safely to numeric
+    df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
+
     totals = df.groupby("Platform")["Minutes"].sum()
-
-    labels = list(totals.index)
-    data = list(totals.values)
-
-    return labels, data
+    return list(totals.index), list(totals.values)
 
 
 def get_weekly_trend(df):
     """
     Prepare last 7 days usage data for line charts.
-    Returns (labels, data) lists.
+    Fully edge-case safe.
     """
-    if df.empty or "Date" not in df.columns:
+    if df is None or df.empty or "Date" not in df.columns:
         return [], []
 
+    # Coerce invalid dates to NaT
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    df = df.dropna(subset=["Date"])
+
+    if df.empty:
+        return [], []
+
     last_week = datetime.now() - timedelta(days=7)
     recent = df[df["Date"] >= last_week]
 
@@ -43,9 +51,10 @@ def get_weekly_trend(df):
 
 def get_total_wasted_time(df):
     """
-    Sum all minutes to get total wasted time.
+    Sum all minutes; handles non-numeric, empty, missing column.
     """
-    if df.empty or "Minutes" not in df.columns:
+    if df is None or df.empty or "Minutes" not in df.columns:
         return 0
 
+    df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
     return int(df["Minutes"].sum())
