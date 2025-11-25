@@ -95,49 +95,36 @@ def home(request):
 
 
 @login_required(login_url='/accounts/login/')
-def stats(request):
-    pet_stats = get_pet_stats(request)
+def stats_view(request):
+    # Load DataFrame safely from session or set empty
+    try:
+        data = request.session.get("scroll_data", [])
+        df = pd.DataFrame(data)
+    except Exception:
+        df = pd.DataFrame()
 
-    total_minutes, most_used, avg_daily = 0, "N/A", 0
-    platform_labels, platform_data = [], []
-    trend_labels, trend_data = [], []
+    # Compute chart data
+    platform_labels, platform_data = get_platform_summary(df)
+    trend_labels, trend_data = get_weekly_trend(df)
+    total_minutes = get_total_wasted_time(df)
 
-    if os.path.exists(CSV_PATH):
-        df = pd.read_csv(CSV_PATH)
+    # Derived summary metrics (safe fallbacks)
+    if platform_data:
+        most_used = platform_labels[platform_data.index(max(platform_data))]
+    else:
+        most_used = "No data"
 
-        # Filter to current user's data
-        profile = UserProfile.objects.get(user=request.user)
-        share_code = profile.share_code
-        df = df[df["Code"] == share_code]
+    avg_daily = sum(trend_data) // len(trend_data) if trend_data else 0
 
-        if not df.empty:
-            df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
-
-            # existing stats
-            total_minutes = int(df["Minutes"].sum())
-            avg_daily = round(df.groupby("Date")["Minutes"].sum().mean(), 2)
-
-            if "Platform" in df.columns:
-                most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
-
-            # NEW chart logic
-            platform_labels, platform_data = get_platform_summary(df)
-            trend_labels, trend_data = get_weekly_trend(df)
-
-    context = {
-        **pet_stats,
-        "total_minutes": total_minutes,
-        "most_used": most_used,
-        "avg_daily": avg_daily,
-
-        # NEW visualization context
+    return render(request, "tracker/stats.html", {
         "platform_labels": platform_labels,
         "platform_data": platform_data,
         "trend_labels": trend_labels,
         "trend_data": trend_data,
-    }
-
-    return render(request, "tracker/stats.html", context)
+        "total_minutes": total_minutes,
+        "most_used": most_used,
+        "avg_daily": avg_daily,
+    })
 
 
 
