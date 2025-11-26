@@ -37,8 +37,8 @@ def get_pet_stats(request):
     if not df.empty and "Platform" in df.columns and focus_platform:
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 
-        today = date.today()
-        yesterday = datetime.now() - timedelta(days=1)
+        today = pd.to_datetime(date.today(), errors="coerce")
+        yesterday = pd.to_datetime(date.today() - timedelta(days=1), errors="coerce")
         one_week_ago = datetime.now() - timedelta(days=7)
         recent = df[df["Date"] >= one_week_ago]
         focus_df = recent[recent["Platform"] == focus_platform]
@@ -52,6 +52,7 @@ def get_pet_stats(request):
             points = daily_point_change(today_total, yesterday_total, points)
             request.session["points"] = points
             request.session.modified = True
+
 
     # Evolution logic
     pet_image, evolution_stage, progress = return_pet_info(1, points)
@@ -119,7 +120,9 @@ def home(request):
 
                 message = f"Added {minutes} minutes for {platform}!"
 
+
     pet_stats = get_pet_stats(request)
+    print(pet_stats)
     return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
 
 
