@@ -72,6 +72,56 @@
       {% endif %}
     </p>
   </div>
+
+  <!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // ------- TIME SPENT PER PLATFORM -------
+  const platformCtx = document.getElementById("platformChart").getContext("2d"); // This is the interface interacting with the place holder for the charts.
+
+  new Chart(platformCtx, {
+      type: "bar",
+      data: {
+          labels: {{ platform_labels|safe }},
+          datasets: [{
+              label: "Minutes",
+              data: {{ platform_values|safe }},
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              y: { beginAtZero: true }
+          }
+      }
+  });
+
+  // ------- WEEKLY TREND -------
+  const weeklyCtx = document.getElementById("weeklyTrend").getContext("2d");
+
+  new Chart(weeklyCtx, {
+      type: "line",
+      data: {
+          labels: {{ weekly_labels|safe }},
+          datasets: [{
+              label: "Minutes per Day",
+              data: {{ weekly_values|safe }},
+              fill: false,
+              tension: 0.3,
+              borderWidth: 2
+          }]
+      },
+      options: {
+          responsive: true,
+          scales: {
+              y: { beginAtZero: true }
+          }
+      }
+  });
+</script>
+
   
 </section>
 

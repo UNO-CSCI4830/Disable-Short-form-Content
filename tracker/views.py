@@ -149,11 +149,38 @@ def stats(request):
             if "Platform" in df.columns:
                 most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
 
+        # ----- CHART DATA -----
+    platform_labels = []
+    platform_values = []
+    weekly_labels = []
+    weekly_values = []
+
+    if not df.empty:
+
+        # --- Time Spent per Platform Data ---
+        platform_group = df.groupby("Platform")["Minutes"].sum()
+        platform_labels = list(platform_group.index)
+        platform_values = list(platform_group.values)
+
+        # --- Weekly Trend (last 7 days) ---
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        week_ago = datetime.now() - timedelta(days=7)
+        week_df = df[df["Date"] >= week_ago]
+
+        if not week_df.empty:
+            daily_totals = week_df.groupby(df["Date"].dt.date)["Minutes"].sum()
+            weekly_labels = [str(d) for d in daily_totals.index]
+            weekly_values = list(daily_totals.values)
+
     context = {
         **pet_stats,
         "total_minutes": total_minutes,
         "most_used": most_used,
         "avg_daily": avg_daily,
+        "platform_labels": platform_labels,
+        "platform_values": platform_values,
+        "weekly_labels": weekly_labels,
+        "weekly_values": weekly_values,
     }
 
     return render(request, "tracker/stats.html", context)
