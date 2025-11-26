@@ -5,7 +5,6 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .models import UserProfile, TimeEntry
-from django.http import HttpResponse
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
@@ -177,5 +176,3 @@ def track_user(request):
             context["error"] = "No user found with that share code."
 
     return render(request, "tracker/track_user.html", context)
-def share_page(request, code):
-    return HttpResponse("Share page for " + code)
