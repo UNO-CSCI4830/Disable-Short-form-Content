@@ -133,6 +133,7 @@ def stats(request):
     """Stats page — displays usage summaries and dopamine pet info."""
     pet_stats = get_pet_stats(request)
 
+    # --- Load usage data for summary cards ---
     total_minutes, most_used, avg_daily = 0, "N/A", 0
 
     if os.path.exists(CSV_PATH):
@@ -166,11 +167,14 @@ def stats(request):
 # ---------- LEADERBOARD PAGE ----------
 @login_required(login_url='/accounts/login/')
 def leaderboard(request):
+    import os
     import pandas as pd
+    from django.conf import settings
 
     csv_path = CSV_PATH
 
     try:
+        # Try reading CSV safely
         if os.path.getsize(csv_path) == 0:
             raise pd.errors.EmptyDataError("CSV is empty")
 
@@ -209,6 +213,7 @@ def track_user(request):
             target_user = profile.user
 
             entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
+
             total_minutes = sum(e.minutes for e in entries)
 
             context.update({
