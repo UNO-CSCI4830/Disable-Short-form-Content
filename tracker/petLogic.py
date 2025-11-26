@@ -49,7 +49,7 @@ def safe_image(img): #if an image doesn't exist, it returns dragon egg
     return "assets/dragon_pet_egg.png"
 
 def return_pet_info(pet, points): #takes in pet and points, returns image path
-    loader = [0, 0, 0] #image path, stage name, progress
+    loader = [None, None, None] #image path, stage name, progress
     if pet == 1: #dragon
         if 0 < points <= 10:
             loader[0] = safe_image("assets/dragon_pet_egg.png")
@@ -75,24 +75,24 @@ def return_pet_info(pet, points): #takes in pet and points, returns image path
             print("points not within range")
     elif pet == 2:#phoenix
         if 0 < points <= 10:
-            return None
+            return loader
         elif 10 < points <= 30:
-            return None
+            return loader
         elif 30 < points <= 60:
-            return None
+            return loader
         elif 60 < points <= 100:
-            return None
+            return loader
         else:
             print("points not within range")
     elif pet == 3:#tbd
         if 0 < points <= 10:
-            return None
+            return loader
         elif 10 < points <= 30:
-            return None
+            return loader
         elif 30 < points <= 60:
-            return None
+            return loader
         elif 60 < points <= 100:
-            return None
+            return loader
         else:
             print("points not within range")
-    return None
+    return loader

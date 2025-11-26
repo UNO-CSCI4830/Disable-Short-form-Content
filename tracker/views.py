@@ -37,18 +37,21 @@ def get_pet_stats(request):
     if not df.empty and "Platform" in df.columns and focus_platform:
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 
+        today = date.today()
+        yesterday = datetime.now() - timedelta(days=1)
         one_week_ago = datetime.now() - timedelta(days=7)
         recent = df[df["Date"] >= one_week_ago]
         focus_df = recent[recent["Platform"] == focus_platform]
 
         if not focus_df.empty:
+            yesterday_total = focus_df[focus_df["Date"] == yesterday]["Minutes"].sum()
+            today_total = focus_df[focus_df["Date"] == today]["Minutes"].sum()
             daily_avg = focus_df.groupby("Date")["Minutes"].sum().mean()
 
-            # Award points if average < 60 min/day
-            if daily_avg < 60:
-                points += 10
-                request.session["points"] = points
-                request.session.modified = True
+            # Award points if today's total is under yesterday's
+            points = daily_point_change(today_total, yesterday_total, points)
+            request.session["points"] = points
+            request.session.modified = True
 
     # Evolution logic
     pet_image, evolution_stage, progress = return_pet_info(1, points)
