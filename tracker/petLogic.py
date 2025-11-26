@@ -1,3 +1,4 @@
+import os
 '''
 Goals with this "class"
 
@@ -13,18 +14,25 @@ so that we can test additional things and allow for retroactive tracking
 
 '''
 def daily_point_change(today, yesterday, points):
+    #print("points: ", points)
     if not yesterday:
+        #print("if not yesterday")
         return points
     if today > yesterday:
         if points == 0:
+            #print("if point == 0")
             return 0
         else:
+            #print("if not point == 0")
             points -= 1
     elif today < yesterday:
-        if points == 100:
+        if points >= 100:
+            #print("if point >= 100")
             return 100
         else:
+            #print("if add to point")
             points +=1
+    #print("points: ", points)
     return points
 
 def weekly_point_change(this_week, last_week, points):
@@ -46,29 +54,30 @@ def weekly_point_change(this_week, last_week, points):
 def safe_image(img): #if an image doesn't exist, it returns dragon egg
     if os.path.exists(img):
         return img
-    return "assets/dragon_pet_egg.png"
+    return "dragon_pet_baby.png"
 
 def return_pet_info(pet, points): #takes in pet and points, returns image path
     loader = [None, None, None] #image path, stage name, progress
     if pet == 1: #dragon
-        if 0 < points <= 10:
-            loader[0] = safe_image("assets/dragon_pet_egg.png")
-            loader[1] = "Baby Dragon 🐣"
+        if 0 <= points <= 10:
+            loader[0] = safe_image("dragon_pet_egg.png")
+            loader[1] = "Dragon Egg"
             loader[2] = round((points / 10) * 100, 2)
             return loader
         elif 10 < points <= 30:
-            loader[0] = safe_image("assets/dragon_pet_baby.png")
+            loader[0] = safe_image("dragon_pet_baby.png")
             loader[1] = "Baby Dragon 🐣"
             loader[2] = round(((points - 10) / 20) * 100, 2)
             return loader
         elif 30 < points <= 60:
-            loader[0] = safe_image("assets/dragon_pet_teen.png")
-            loader[1] = "Baby Dragon 🐣"
+            loader[0] = safe_image("dragon_pet_teen.png")
+            print("set image")
+            loader[1] = "Teen Dragon"
             loader[2] = round(((points - 30) / 30) * 100, 2)
             return loader
         elif 60 < points <= 100:
-            loader[0] = safe_image("assets/dragon_pet_adult.png") #does not exist at the moment
-            loader[1] = "Baby Dragon 🐣"
+            loader[0] = safe_image("dragon_pet_adult.png") #does not exist at the moment
+            loader[1] = "Adult Dragon"
             loader[2] = 100
             return loader
         else:

@@ -37,8 +37,8 @@ def get_pet_stats(request):
     if not df.empty and "Platform" in df.columns and focus_platform:
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 
-        today = date.today()
-        yesterday = datetime.now() - timedelta(days=1)
+        today = pd.to_datetime(date.today(), errors="coerce")
+        yesterday = pd.to_datetime(date.today() - timedelta(days=1), errors="coerce")
         one_week_ago = datetime.now() - timedelta(days=7)
         recent = df[df["Date"] >= one_week_ago]
         focus_df = recent[recent["Platform"] == focus_platform]
@@ -52,6 +52,7 @@ def get_pet_stats(request):
             points = daily_point_change(today_total, yesterday_total, points)
             request.session["points"] = points
             request.session.modified = True
+
 
     # Evolution logic
     pet_image, evolution_stage, progress = return_pet_info(1, points)
@@ -119,7 +120,9 @@ def home(request):
 
                 message = f"Added {minutes} minutes for {platform}!"
 
+
     pet_stats = get_pet_stats(request)
+    print(pet_stats)
     return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
 
 
@@ -130,6 +133,7 @@ def stats(request):
     """Stats page — displays usage summaries and dopamine pet info."""
     pet_stats = get_pet_stats(request)
 
+    # --- Load usage data for summary cards ---
     total_minutes, most_used, avg_daily = 0, "N/A", 0
 
     if os.path.exists(CSV_PATH):
@@ -190,11 +194,14 @@ def stats(request):
 # ---------- LEADERBOARD PAGE ----------
 @login_required(login_url='/accounts/login/')
 def leaderboard(request):
+    import os
     import pandas as pd
+    from django.conf import settings
 
     csv_path = CSV_PATH
 
     try:
+        # Try reading CSV safely
         if os.path.getsize(csv_path) == 0:
             raise pd.errors.EmptyDataError("CSV is empty")
 
@@ -221,6 +228,34 @@ def leaderboard(request):
     return render(request, 'tracker/leaderboard.html', {'leaderboard': leaderboard})
 
 
+# ---------- RESOURCES PAGE ----------
+@login_required(login_url='/accounts/login/')
+def resources(request):
+    most_used = "N/A"
+    platform_minutes = {}
+    all_equal = False
+
+    if os.path.exists(CSV_PATH):
+        df = pd.read_csv(CSV_PATH)
+        if not df.empty and "Minutes" in df.columns:
+            if "Platform" in df.columns and not df["Platform"].empty:
+                most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
+                platform_minutes = (
+                    df.groupby("Platform")["Minutes"]
+                    .sum()
+                    .sort_values(ascending=False)
+                    .to_dict()
+                )
+
+                non_other_vals = [v for k, v in platform_minutes.items() if str(k).strip().lower() != "other"]
+                all_equal = len(non_other_vals) >= 2 and len(set(non_other_vals)) == 1
+
+    context = {
+        "most_used": most_used,
+        "all_equal": all_equal,
+    }
+
+    return render(request, "tracker/resources.html", context)
 
 
 def track_user(request):
@@ -233,6 +268,7 @@ def track_user(request):
             target_user = profile.user
 
             entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
+
             total_minutes = sum(e.minutes for e in entries)
 
             context.update({
