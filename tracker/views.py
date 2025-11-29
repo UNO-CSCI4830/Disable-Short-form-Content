@@ -122,7 +122,6 @@ def home(request):
 
 
     pet_stats = get_pet_stats(request)
-    print(pet_stats)
     return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
 
 

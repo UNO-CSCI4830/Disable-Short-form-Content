@@ -21,14 +21,16 @@ def daily_point_change(today, yesterday, points):
     if today > yesterday:
         if points == 0:
             #print("if point == 0")
-            return 0
+            points = 0
+            return points
         else:
             #print("if not point == 0")
             points -= 1
     elif today < yesterday:
         if points >= 100:
             #print("if point >= 100")
-            return 100
+            points = 100
+            return points
         else:
             #print("if add to point")
             points +=1
