@@ -5,6 +5,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .models import UserProfile, TimeEntry
+from django.shortcuts import render, get_object_or_404
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
@@ -218,14 +219,31 @@ def track_user(request):
             entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
             total_minutes = sum(e.minutes for e in entries)
 
-            context.update({
-                "found": True,
-                "target_user": target_user,
-                "entries": entries,
+            context["user_data"] = {
+                "share_code": share_code,         # ← FIX
                 "total_minutes": total_minutes,
-            })
+                "top_platform": "N/A",
+                "pet_mood": "Happy",
+            }
 
         except UserProfile.DoesNotExist:
             context["error"] = "No user found with that share code."
 
     return render(request, "tracker/track_user.html", context)
+
+def track_user_detail(request, share_code):
+    """Show detailed stats for a user based on their share code."""
+    share_code = share_code.strip().upper()
+    profile = get_object_or_404(UserProfile, share_code=share_code)
+    target_user = profile.user
+
+    entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
+    total_minutes = sum(e.minutes for e in entries)
+
+    context = {
+        "target_user": target_user,
+        "entries": entries,
+        "total_minutes": total_minutes,
+    }
+
+    return render(request, "tracker/track_user_detail.html", context)

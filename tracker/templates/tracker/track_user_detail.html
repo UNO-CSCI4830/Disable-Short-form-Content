@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        p {
+            font-size: 1.1em;
+        }
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User Detail</h1>
+        <p><span class="label">Username:</span> {{ user.username }}</p>
+        <p><span class="label">Email:</span> {{ user.email }}</p>
+        <p><span class="label">Share Code:</span> {{ user.userprofile.share_code }}</p>
+    </div>
+</body>
+</html>
