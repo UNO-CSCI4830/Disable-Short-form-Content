@@ -7,6 +7,7 @@ from django.urls import reverse
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     share_code = models.CharField(max_length=12, unique=True, blank=True)
+    friends = models.ManyToManyField("self", symmetrical=False, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.share_code or len(self.share_code) != 12:
