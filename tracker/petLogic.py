@@ -76,7 +76,7 @@ def return_pet_info(pet, points): #takes in pet and points, returns image path
             loader[2] = round(((points - 30) / 30) * 100, 2)
             return loader
         elif 60 < points <= 100:
-            loader[0] = safe_image("dragon_pet_adult.png") #does not exist at the moment
+            loader[0] = safe_image("dragon_pet_adult.png")
             loader[1] = "Adult Dragon"
             loader[2] = 100
             return loader
@@ -84,23 +84,47 @@ def return_pet_info(pet, points): #takes in pet and points, returns image path
             print("points not within range")
     elif pet == 2:#phoenix
         if 0 < points <= 10:
+            loader[0] = safe_image("phoenix_pet_egg.png")
+            loader[1] = "Phoenix Egg"
+            loader[2] = round((points / 10) * 100, 2)
             return loader
         elif 10 < points <= 30:
+            loader[0] = safe_image("phoenix_pet_baby.png")
+            loader[1] = "Phoenix Baby"
+            loader[2] = round(((points - 10) / 20) * 100, 2)
             return loader
         elif 30 < points <= 60:
+            loader[0] = safe_image("phoenix_pet_teen.png")
+            loader[1] = "Phoenix Teen"
+            loader[2] = round(((points - 30) / 30) * 100, 2)
             return loader
         elif 60 < points <= 100:
+            loader[0] = safe_image("phoenix_pet_adult.png")
+            loader[1] = "Phoenix Adult"
+            loader[2] = 100
             return loader
         else:
             print("points not within range")
-    elif pet == 3:#tbd
+    elif pet == 3:#slime
         if 0 < points <= 10:
+            loader[0] = safe_image("slime_pet_egg.png")
+            loader[1] = "Slime Egg"
+            loader[2] = round((points / 10) * 100, 2)
             return loader
         elif 10 < points <= 30:
+            loader[0] = safe_image("slime_pet_baby.png")
+            loader[1] = "Slime Baby"
+            loader[2] = round(((points - 10) / 20) * 100, 2)
             return loader
         elif 30 < points <= 60:
+            loader[0] = safe_image("slime_pet_teen.png")
+            loader[1] = "Slime Teen"
+            loader[2] = round(((points - 30) / 30) * 100, 2)
             return loader
         elif 60 < points <= 100:
+            loader[0] = safe_image("slime_pet_adult.png")
+            loader[1] = "Slime Adult"
+            loader[2] = 100
             return loader
         else:
             print("points not within range")
