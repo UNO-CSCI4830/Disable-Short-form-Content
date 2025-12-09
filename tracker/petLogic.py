@@ -1,4 +1,5 @@
 import os
+from django.templatetags.static import static
 '''
 Goals with this "class"
 
@@ -51,10 +52,9 @@ def weekly_point_change(this_week, last_week, points):
             points += 10
     return points
 
-def safe_image(img): #if an image doesn't exist, it returns dragon egg
-    if os.path.exists(img):
-        return img
-    return "dragon_pet_baby.png"
+def safe_image(img_name):
+    # Return a static URL to the image
+    return static(f"tracker/{img_name}")
 
 def return_pet_info(pet, points): #takes in pet and points, returns image path
     loader = [None, None, None] #image path, stage name, progress
@@ -87,21 +87,25 @@ def return_pet_info(pet, points): #takes in pet and points, returns image path
             loader[0] = safe_image("phoenix_pet_egg.png")
             loader[1] = "Phoenix Egg"
             loader[2] = round((points / 10) * 100, 2)
+            print("IMAGE SELECTED:", loader[0])
             return loader
         elif 10 < points <= 30:
             loader[0] = safe_image("phoenix_pet_baby.png")
             loader[1] = "Phoenix Baby"
             loader[2] = round(((points - 10) / 20) * 100, 2)
+            print("IMAGE SELECTED:", loader[0])
             return loader
         elif 30 < points <= 60:
             loader[0] = safe_image("phoenix_pet_teen.png")
             loader[1] = "Phoenix Teen"
             loader[2] = round(((points - 30) / 30) * 100, 2)
+            print("IMAGE SELECTED:", loader[0])
             return loader
         elif 60 < points <= 100:
             loader[0] = safe_image("phoenix_pet_adult.png")
             loader[1] = "Phoenix Adult"
             loader[2] = 100
+            print("IMAGE SELECTED:", loader[0])
             return loader
         else:
             print("points not within range")
@@ -110,22 +114,27 @@ def return_pet_info(pet, points): #takes in pet and points, returns image path
             loader[0] = safe_image("slime_pet_egg.png")
             loader[1] = "Slime Egg"
             loader[2] = round((points / 10) * 100, 2)
+            print("IMAGE SELECTED:", loader[0])
             return loader
         elif 10 < points <= 30:
             loader[0] = safe_image("slime_pet_baby.png")
             loader[1] = "Slime Baby"
             loader[2] = round(((points - 10) / 20) * 100, 2)
+            print("IMAGE SELECTED:", loader[0])
             return loader
         elif 30 < points <= 60:
             loader[0] = safe_image("slime_pet_teen.png")
             loader[1] = "Slime Teen"
             loader[2] = round(((points - 30) / 30) * 100, 2)
+            print("IMAGE SELECTED:", loader[0])
             return loader
         elif 60 < points <= 100:
             loader[0] = safe_image("slime_pet_adult.png")
             loader[1] = "Slime Adult"
             loader[2] = 100
+            print("IMAGE SELECTED:", loader[0])
             return loader
         else:
             print("points not within range")
+
     return loader
