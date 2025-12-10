@@ -65,7 +65,6 @@ def get_pet_stats(request):
     }
 
 
-
 @login_required(login_url='/accounts/login/')
 def home(request):
     """Home page — same pet state as stats."""
@@ -158,8 +157,6 @@ def home(request):
     return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
 
 
-
-
 @login_required(login_url='/accounts/login/')
 def stats(request):
     """Stats page — displays usage summaries and dopamine pet info."""
@@ -222,7 +219,6 @@ def stats(request):
     return render(request, "tracker/stats.html", context)
 
 
-
 # ---------- LEADERBOARD PAGE ----------
 @login_required(login_url='/accounts/login/')
 def leaderboard(request):
@@ -258,37 +254,6 @@ def leaderboard(request):
         leaderboard = []
 
     return render(request, 'tracker/leaderboard.html', {'leaderboard': leaderboard})
-
-
-# ---------- RESOURCES PAGE ----------
-@login_required(login_url='/accounts/login/')
-def resources(request):
-    most_used = "N/A"
-    platform_minutes = {}
-    all_equal = False
-
-    if os.path.exists(CSV_PATH):
-        df = pd.read_csv(CSV_PATH)
-        if not df.empty and "Minutes" in df.columns:
-            if "Platform" in df.columns and not df["Platform"].empty:
-                most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
-                platform_minutes = (
-                    df.groupby("Platform")["Minutes"]
-                    .sum()
-                    .sort_values(ascending=False)
-                    .to_dict()
-                )
-
-                non_other_vals = [v for k, v in platform_minutes.items() if str(k).strip().lower() != "other"]
-                all_equal = len(non_other_vals) >= 2 and len(set(non_other_vals)) == 1
-
-    context = {
-        "most_used": most_used,
-        "all_equal": all_equal,
-    }
-
-    return render(request, "tracker/resources.html", context)
-
 
 
 # ---------- RESOURCES PAGE ----------
