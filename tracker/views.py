@@ -79,6 +79,7 @@ def home(request):
         pd.DataFrame(columns=['Code', 'Date', 'Platform', 'Minutes']).to_csv(CSV_PATH, index=False)
 
     if request.method == "POST":
+        #get pet type
 
         # ----- SET FOCUS -----
         if 'set_focus' in request.POST:
@@ -94,6 +95,7 @@ def home(request):
             platform = request.POST.get("platform")
             minutes = request.POST.get("minutes")
             date_input = request.POST.get("date")
+            pet_type = request.POST.get("pet_type")
 
             if not date_input:
                 date_input =  date.today().isoformat()
