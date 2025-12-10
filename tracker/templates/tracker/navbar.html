@@ -13,16 +13,30 @@
 
   <!-- Share Code (top right) -->
   {% if user.is_authenticated and user.userprofile %}
-    <div style="
-      position: absolute;
-      right: 1rem;
-      top: 0.8rem;
-      font-size: 0.9rem;
-      color: #bfdbfe;
+  <div style="
+    position: absolute;
+    right: 1rem;
+    top: 0.8rem;
+    font-size: 0.9rem;
+    color: #bfdbfe;
+    cursor: pointer;
+  "
+  id="copy-share-code">
+
+    Code:
+    <strong id="shareCodeValue">{{ user.userprofile.share_code }}</strong>
+
+    <span id="copyMessage" style="
+      display: none;
+      margin-left: 6px;
+      font-size: 0.8rem;
+      color: #bbf7d0;
     ">
-      Code: <strong>{{ user.userprofile.share_code }}</strong>
-    </div>
-  {% endif %}
+      ✔ Copied!
+    </span>
+
+  </div>
+{% endif %}
   <!-- App Title -->
   <h1 style="
     font-size: 2rem;
@@ -100,4 +114,28 @@
       }
     }
   </style>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const codeElement = document.getElementById("shareCodeValue");
+    const container = document.getElementById("copy-share-code");
+    const msg = document.getElementById("copyMessage");
+
+    if (container && codeElement) {
+        container.addEventListener("click", function () {
+            const code = codeElement.textContent.trim();
+
+            navigator.clipboard.writeText(code).then(() => {
+                // Show "Copied!"
+                msg.style.display = "inline";
+
+                // Hide after 1.5 seconds
+                setTimeout(() => {
+                    msg.style.display = "none";
+                }, 1500);
+            });
+        });
+    }
+});
+</script>
+
 </nav>

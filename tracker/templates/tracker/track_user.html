@@ -11,28 +11,53 @@
 </p>
 
 <!-- Code Entry Form -->
-<form method="POST" action="{% url 'track_user' %}" style="margin-top:2rem;">
-    {% csrf_token %}
-
+<form method="GET" action="{% url 'track_user' %}" style="margin-top:2rem;">
     <label for="tracking_code">Tracking Code</label>
     <input type="text"
            id="tracking_code"
-           name="tracking_code"
-           placeholder="e.g. HX9F-28QK"
+           name="code"
+           placeholder="e.g. HX9F28QK"
            required>
 
     <button type="submit">View User</button>
 </form>
+<form method="POST" action="{% url 'track_user' %}" style="margin-top:1rem;">
+  {% csrf_token %}
+  <label for="friend_code">Add Friend by Share Code</label>
+  <input id="friend_code" name="friend_code" placeholder="ENTERCODE123" required>
+  <button type="submit">Add Friend</button>
+</form>
 
-<!-- Display error or success messages -->
+{% if error %}
+  <p style="color:#dc2626;">{{ error }}</p>
+{% endif %}
+{% if message %}
+  <p style="color:green;">{{ message }}</p>
+{% endif %}
+
+{% if friends %}
+  <h3>Your Friends</h3>
+  <ul>
+    {% for f in friends %}
+      <li>
+        {{ f.user.username }}
+        <a href="{% url 'track_user_detail' f.share_code %}">View</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>You have no friends yet.</p>
+{% endif %}
+<!-- Display error -->
 {% if error %}
   <p style="text-align:center; color:#dc2626; margin-top:1rem;">{{ error }}</p>
 {% endif %}
 
+<!-- Summary Panel -->
 {% if user_data %}
   <hr style="margin:2rem 0;">
 
-  <h3 style="text-align:center;">User Summary</h3>
+  <h3 style="text-align:center;">User Summary: {{ user_data.username }}</h3>
 
   <div style="
       display:flex;
@@ -78,6 +103,19 @@
       </div>
   </div>
 
+  <!-- Full Details Button -->
+  <div style="text-align:center; margin-top:2rem;">
+      <a href="{% url 'track_user_detail' user_data.share_code %}"
+         style="
+            background:#10b981;
+            color:white;
+            padding:0.7rem 1.2rem;
+            border-radius:0.5rem;
+            text-decoration:none;
+         ">
+         View Full Details →
+      </a>
+  </div>
 {% endif %}
 
 {% endblock %}

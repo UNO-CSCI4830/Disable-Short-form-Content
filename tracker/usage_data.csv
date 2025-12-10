@@ -1,5 +1,28 @@
-UserCode,Date,Platform,Minutes
-,,,
-<django.db.models.query_utils.DeferredAttribute object at 0x000001FB54156940>,2025-11-19,TikTok,10.0
-<django.db.models.query_utils.DeferredAttribute object at 0x000001FB54156940>,2025-11-19,TikTok,10.0
-7aa71618,2025-11-19,TikTok,10.0
+Date,Platform,Minutes,Code
+2025-11-04,YouTube,10.0,
+<<<<<<< HEAD,,,
+2025-11-05,TikTok,20.0,
+2025-11-05,TikTok,40.0,
+2025-11-05,YouTube Shorts,10.0,
+2025-11-05,YouTube Shorts,9.0,
+2025-11-05,YouTube Shorts,8.0,
+2025-11-05,YouTube Shorts,1000000.0,
+2025-11-05,YouTube Shorts,1.0,
+2025-11-05,YouTube Shorts,1.0,
+2025-11-05,YouTube Shorts,100000000000.0,
+2025-11-05,YouTube Shorts,10.0,
+2025-11-05,Instagram Reels,10.0,
+=======,,,
+2025-11-05,TikTok,30.0,
+2025-11-05,Facebook,10000000.0,
+2025-11-05,Facebook,1e+18,
+2025-11-05,Other,1e+18,
+>>>>>>> 2e07c36bce2b8f5944d120c40ac447b04cfc6a9d,,,
+2025-11-20,YouTube Shorts,12.0,08644f65
+2025-11-20,Instagram Reels,22.0,08644f65
+2025-11-21,YouTube Shorts,33.0,1beacef0
+2025-11-21,YouTube Shorts,10.0,b6c208fe
+2025-12-01,YouTube Shorts,1.0,b0f85ecd
+2025-12-01,YouTube Shorts,11.0,EF27E94FBC3B
+2025-12-01,YouTube Shorts,22.0,EF27E94FBC3B
+2025-12-01,YouTube Shorts,12.0,EF27E94FBC3B

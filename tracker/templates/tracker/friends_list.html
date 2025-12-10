@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Your Friends</h1>
+
+    {% if friends %}
+        <ul>
+            {% for friend in friends %}
+                <li>
+                    <a href="{% url 'track_user_detail' share_code=friend.share_code %}">
+                        {{ friend.user.username }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no friends added yet.</p>
+    {% endif %}
+
+    <form method="POST" class="mt-3">
+        {% csrf_token %}
+        <label>Add Friend by Share Code:</label>
+        <input type="text" name="friend_code" required>
+        <button type="submit">Add</button>
+    </form>
+</div>
+{% endblock %}
