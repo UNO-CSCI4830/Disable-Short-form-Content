@@ -59,9 +59,8 @@
     <h3>Pet Evolution (Progress)</h3>
 
     <div class="pet-container">
-      <img src="{% static 'dragon_pet_egg.png' %}" alt="Dopamine Pet" class="pet-avatar">
+      <img src="{{ pet_image }}" alt="Pet Evolution" style="height: 150px;">
     </div>
-
     <p class="pet-caption">
       {% if total_minutes < 30 %}
         Your dopamine pet is thrilled! 🐾 Keep it up!

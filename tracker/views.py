@@ -48,11 +48,6 @@ def get_pet_stats(request):
             today_total = focus_df[focus_df["Date"] == today]["Minutes"].sum()
             daily_avg = focus_df.groupby("Date")["Minutes"].sum().mean()
 
-            # Award points if today's total is under yesterday's
-            points = daily_point_change(today_total, yesterday_total, points)
-            request.session["points"] = points
-            request.session.modified = True
-
 
     # Evolution logic
     pet_image, evolution_stage, progress = return_pet_info(1, points)
@@ -121,7 +116,36 @@ def home(request):
                 df.to_csv(CSV_PATH, index=False)
 
                 message = f"Added {minutes} minutes for {platform}!"
-
+                # -------------------------------------------
+                # REWARD LOGIC — ONLY RUNS WHEN CSV UPDATED
+                DAILY_LIMIT = 15
+                points = request.session.get("points", 0)
+                
+                # Calculate today's total usage (all platforms or only focus platform)
+                today_total = df[
+                    (df["Code"] == share_code) &
+                    (df["Date"] == date_input)
+                ]["Minutes"].sum()
+                
+                # Calculate yesterday's total
+                yesterday_str = (date.fromisoformat(date_input) - timedelta(days=1)).isoformat()
+                yesterday_total = df[
+                    (df["Code"] == share_code) &
+                    (df["Date"] == yesterday_str)
+                ]["Minutes"].sum()
+                
+                # --- Condition 1: Daily limit rule
+                if today_total <= DAILY_LIMIT:
+                    points += 1
+                
+                # --- Condition 2: Improvement rule
+                if today_total < yesterday_total:
+                    points += 1
+                
+                # Save updated points
+                request.session["points"] = points
+                request.session.modified = True
+                # -------------------------------------------
 
     pet_stats = get_pet_stats(request)
     print(pet_stats)
