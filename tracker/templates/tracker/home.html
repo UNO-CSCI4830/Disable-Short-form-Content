@@ -17,11 +17,23 @@
     <option value="TikTok">TikTok</option>
     <option value="Instagram Reels">Instagram Reels</option>
     <option value="Facebook Reels">Facebook Reels</option>
+    <option value="Streaming Addiction">Streaming Addiction</option>
+    <option value="Video Games">Video Games</option>
+    <option value="Gambling">Gambling</option>
+    <option value="Food Addiction">Food Addiction</option>
+    <option value="Caffeine Addiction">Caffeine Addiction</option>
+    <option value="Nicotine Addiction">Nicotine Addiction</option>
+    <option value="Alcohol Addiction">Alcohol Addiction</option>
+    <option value="Dopamine Addiction">Dopamine Addiction</option>
+    <option value="Drug Addiction">Drug Addiction</option>
     <option value="Other">Other</option>
   </select>
 
   <label for="minutes">Minutes Spent</label>
   <input type="number" id="minutes" name="minutes" placeholder="e.g. 15" min="1" required>
+
+  <label for="date">Date (optional)</label>
+    <input type="date" id="date" name="date">
 
   <button type="submit" name="add_entry">Add Entry</button>
 </form>
@@ -44,6 +56,15 @@
     <option value="TikTok">TikTok</option>
     <option value="Instagram Reels">Instagram Reels</option>
     <option value="Facebook Reels">Facebook Reels</option>
+    <option value="Streaming Addiction">Streaming Addiction</option>
+    <option value="Video Games">Video Games</option>
+    <option value="Gambling">Gambling</option>
+    <option value="Food Addiction">Food Addiction</option>
+    <option value="Caffeine Addiction">Caffeine Addiction</option>
+    <option value="Nicotine Addiction">Nicotine Addiction</option>
+    <option value="Alcohol Addiction">Alcohol Addiction</option>
+    <option value="Dopamine Addiction">Dopamine Addiction</option>
+    <option value="Drug Addiction">Drug Addiction</option>
     <option value="Other">Other</option>
   </select>
 
@@ -61,6 +82,17 @@
 <hr style="margin: 2rem 0;">
 
 <h2 style="text-align:center;">Your Dopamine Pet</h2>
+    <!-----FORM 3 PET TYPE ----->
+<form method="POST" action="{% url 'home' %}">
+  {% csrf_token %}
+    <label for="pet_type">Pet Type</label>
+    <select name="pet_type" id="pet_type" required>
+        <option value="1">Dragon</option>
+        <option value="2">Phoenix</option>
+        <option value="3">Slime</option>
+    </select>
+    <button type="submit" name="set_pet">Set Pet Type</button>
+</form>
 
 {% if focus_platform %}
   <div class="focus-stats">
@@ -74,7 +106,7 @@
     </div>
 
     <div class="pet-container" style="display: flex; justify-content: center; align-items: center; margin-top: 1rem;">
-      <img src="{% static 'dragon_pet_egg.png' %}" alt="Dopamine Pet" class="pet-avatar">
+      <img src="{{ pet_image }}" alt="Pet Evolution" style="height: 256px;">
     </div>
   </div>
 {% else %}

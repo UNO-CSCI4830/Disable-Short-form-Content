@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from .models import UserProfile, TimeEntry
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from .petLogic import *
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
@@ -18,6 +19,7 @@ def get_pet_stats(request):
     """Unified logic for dopamine pet display and progress calculation."""
     focus_platform = request.session.get("focus_platform", None)
     points = request.session.get("points", 0)
+    pet_type = request.session.get("pet_type", 1)
     daily_avg = 0
 
     # Ensure CSV exists with correct columns
@@ -38,46 +40,27 @@ def get_pet_stats(request):
     if not df.empty and "Platform" in df.columns and focus_platform:
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
 
+        today = pd.to_datetime(date.today(), errors="coerce")
+        yesterday = pd.to_datetime(date.today() - timedelta(days=1), errors="coerce")
         one_week_ago = datetime.now() - timedelta(days=7)
         recent = df[df["Date"] >= one_week_ago]
         focus_df = recent[recent["Platform"] == focus_platform]
 
         if not focus_df.empty:
+            yesterday_total = focus_df[focus_df["Date"] == yesterday]["Minutes"].sum()
+            today_total = focus_df[focus_df["Date"] == today]["Minutes"].sum()
             daily_avg = focus_df.groupby("Date")["Minutes"].sum().mean()
 
-            # Award points if average < 60 min/day
-            if daily_avg < 60:
-                points += 10
-                request.session["points"] = points
-                request.session.modified = True
 
     # Evolution logic
-    if points >= 100:
-        pet_image = "tracker/assets/dragon_pet_final.png"
-        evolution_stage = "Final Evolution "
-        progress = 100
-
-    elif points >= 40:
-        pet_image = "tracker/assets/dragon_pet_adult.png"
-        evolution_stage = "Stage 3 Evolution"
-        progress = ((points - 40) / 60) * 100
-
-    elif points >= 20:
-        pet_image = "tracker/assets/dragon_pet_teen.png"
-        evolution_stage = "Stage 2 Evolution"
-        progress = ((points - 20) / 20) * 100
-
-    else:
-        pet_image = "tracker/assets/dragon_pet_egg.png"
-        evolution_stage = "Baby Dragon 🐣"
-        progress = (points / 20) * 100
+    pet_image, evolution_stage, progress = return_pet_info(pet_type, points)
 
     return {
         "focus_platform": focus_platform,
         "daily_avg": round(daily_avg, 2),
         "points": points,
         "evolution_stage": evolution_stage,
-        "progress": round(progress, 2),
+        "progress": progress,
         "pet_image": pet_image,
     }
 
@@ -108,6 +91,10 @@ def home(request):
         elif 'add_entry' in request.POST:
             platform = request.POST.get("platform")
             minutes = request.POST.get("minutes")
+            date_input = request.POST.get("date")
+
+            if not date_input:
+                date_input =  date.today().isoformat()
 
             if platform and minutes:
                 df = pd.read_csv(CSV_PATH)
@@ -121,7 +108,7 @@ def home(request):
 
                 new_row = {
                     "Code": share_code,
-                    "Date": date.today().isoformat(),
+                    "Date": date_input,
                     "Platform": platform,
                     "Minutes": int(minutes)
                 }
@@ -130,8 +117,44 @@ def home(request):
                 df.to_csv(CSV_PATH, index=False)
 
                 message = f"Added {minutes} minutes for {platform}!"
+                # -------------------------------------------
+                # REWARD LOGIC — ONLY RUNS WHEN CSV UPDATED
+                DAILY_LIMIT = 15
+                points = request.session.get("points", 0)
+
+                # Calculate today's total usage (all platforms or only focus platform)
+                today_total = df[
+                    (df["Code"] == share_code) &
+                    (df["Date"] == date_input)
+                ]["Minutes"].sum()
+
+                # Calculate yesterday's total
+                yesterday_str = (date.fromisoformat(date_input) - timedelta(days=1)).isoformat()
+                yesterday_total = df[
+                    (df["Code"] == share_code) &
+                    (df["Date"] == yesterday_str)
+                ]["Minutes"].sum()
+
+                # --- Condition 1: Daily limit rule
+                if today_total <= DAILY_LIMIT:
+                    points += 1
+
+                # --- Condition 2: Improvement rule
+                if today_total < yesterday_total:
+                    points += 1
+
+                # Save updated points
+                request.session["points"] = points
+                request.session.modified = True
+                # -------------------------------------------
+        elif 'set_pet' in request.POST:
+            pet_type = int(request.POST.get("pet_type"))
+            request.session["pet_type"] = pet_type
+            request.session.modified = True
+            message = f"Pet type set to {pet_type}!"
 
     pet_stats = get_pet_stats(request)
+    print(pet_stats)
     return render(request, "tracker/home.html", {**pet_stats, "message": message, "focus_message": focus_message})
 
 
@@ -142,6 +165,7 @@ def stats(request):
     """Stats page — displays usage summaries and dopamine pet info."""
     pet_stats = get_pet_stats(request)
 
+    # --- Load usage data for summary cards ---
     total_minutes, most_used, avg_daily = 0, "N/A", 0
 
     if os.path.exists(CSV_PATH):
@@ -161,11 +185,38 @@ def stats(request):
             if "Platform" in df.columns:
                 most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
 
+        # ----- CHART DATA -----
+    platform_labels = []
+    platform_values = []
+    weekly_labels = []
+    weekly_values = []
+
+    if not df.empty:
+
+        # --- Time Spent per Platform Data ---
+        platform_group = df.groupby("Platform")["Minutes"].sum()
+        platform_labels = list(platform_group.index)
+        platform_values = list(platform_group.values)
+
+        # --- Weekly Trend (last 7 days) ---
+        df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+        week_ago = datetime.now() - timedelta(days=7)
+        week_df = df[df["Date"] >= week_ago]
+
+        if not week_df.empty:
+            daily_totals = week_df.groupby(df["Date"].dt.date)["Minutes"].sum()
+            weekly_labels = [str(d) for d in daily_totals.index]
+            weekly_values = list(daily_totals.values)
+
     context = {
         **pet_stats,
         "total_minutes": total_minutes,
         "most_used": most_used,
         "avg_daily": avg_daily,
+        "platform_labels": platform_labels,
+        "platform_values": platform_values,
+        "weekly_labels": weekly_labels,
+        "weekly_values": weekly_values,
     }
 
     return render(request, "tracker/stats.html", context)
@@ -175,11 +226,14 @@ def stats(request):
 # ---------- LEADERBOARD PAGE ----------
 @login_required(login_url='/accounts/login/')
 def leaderboard(request):
+    import os
     import pandas as pd
+    from django.conf import settings
 
     csv_path = CSV_PATH
 
     try:
+        # Try reading CSV safely
         if os.path.getsize(csv_path) == 0:
             raise pd.errors.EmptyDataError("CSV is empty")
 
@@ -206,6 +260,34 @@ def leaderboard(request):
     return render(request, 'tracker/leaderboard.html', {'leaderboard': leaderboard})
 
 
+# ---------- RESOURCES PAGE ----------
+@login_required(login_url='/accounts/login/')
+def resources(request):
+    most_used = "N/A"
+    platform_minutes = {}
+    all_equal = False
+
+    if os.path.exists(CSV_PATH):
+        df = pd.read_csv(CSV_PATH)
+        if not df.empty and "Minutes" in df.columns:
+            if "Platform" in df.columns and not df["Platform"].empty:
+                most_used = df.groupby("Platform")["Minutes"].sum().idxmax()
+                platform_minutes = (
+                    df.groupby("Platform")["Minutes"]
+                    .sum()
+                    .sort_values(ascending=False)
+                    .to_dict()
+                )
+
+                non_other_vals = [v for k, v in platform_minutes.items() if str(k).strip().lower() != "other"]
+                all_equal = len(non_other_vals) >= 2 and len(set(non_other_vals)) == 1
+
+    context = {
+        "most_used": most_used,
+        "all_equal": all_equal,
+    }
+
+    return render(request, "tracker/resources.html", context)
 
 
 
