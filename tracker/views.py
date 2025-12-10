@@ -5,6 +5,8 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from .models import UserProfile, TimeEntry
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from .petLogic import *
 
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
@@ -119,28 +121,28 @@ def home(request):
                 # REWARD LOGIC — ONLY RUNS WHEN CSV UPDATED
                 DAILY_LIMIT = 15
                 points = request.session.get("points", 0)
-                
+
                 # Calculate today's total usage (all platforms or only focus platform)
                 today_total = df[
                     (df["Code"] == share_code) &
                     (df["Date"] == date_input)
                 ]["Minutes"].sum()
-                
+
                 # Calculate yesterday's total
                 yesterday_str = (date.fromisoformat(date_input) - timedelta(days=1)).isoformat()
                 yesterday_total = df[
                     (df["Code"] == share_code) &
                     (df["Date"] == yesterday_str)
                 ]["Minutes"].sum()
-                
+
                 # --- Condition 1: Daily limit rule
                 if today_total <= DAILY_LIMIT:
                     points += 1
-                
+
                 # --- Condition 2: Improvement rule
                 if today_total < yesterday_total:
                     points += 1
-                
+
                 # Save updated points
                 request.session["points"] = points
                 request.session.modified = True
@@ -289,26 +291,139 @@ def resources(request):
 
 
 def track_user(request):
+    """
+    GET ?code= -> redirect to detail
+    POST (friend_code) -> add friend for logged-in user
+    Renders search/add form with messages and current friends list.
+    """
     context = {}
-    share_code = request.GET.get("code", "").strip().upper()
+    # show current user's friends
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    context["friends"] = user_profile.friends.all()
 
+    # Handle add-friend POST
+    if request.method == "POST" and "friend_code" in request.POST:
+        raw_code = request.POST.get("friend_code", "").strip()
+        if not raw_code:
+            context["error"] = "Please enter a code."
+        else:
+            code = raw_code.upper()
+            # prevent adding yourself
+            if code == user_profile.share_code:
+                context["error"] = "You cannot add yourself as a friend."
+            else:
+                try:
+                    target_profile = UserProfile.objects.get(share_code=code)
+                    # add and save
+                    user_profile.friends.add(target_profile)
+                    # optional: ensure mutual friendship
+                    # target_profile.friends.add(user_profile)
+                    context["message"] = f"Added {target_profile.user.username} as a friend."
+                    # refresh friends list
+                    context["friends"] = user_profile.friends.all()
+                except UserProfile.DoesNotExist:
+                    context["error"] = "No account found with that code."
+
+    # Handle code search (redirect to detail)
+    share_code = request.GET.get("code", "").strip()
     if share_code:
-        try:
-            profile = UserProfile.objects.get(share_code=share_code)
-            target_user = profile.user
-
-            entries = TimeEntry.objects.filter(user=target_user).order_by('-date')
-
-            total_minutes = sum(e.minutes for e in entries)
-
-            context.update({
-                "found": True,
-                "target_user": target_user,
-                "entries": entries,
-                "total_minutes": total_minutes,
-            })
-
-        except UserProfile.DoesNotExist:
-            context["error"] = "No user found with that share code."
+        return redirect("track_user_detail", share_code=share_code.upper())
 
     return render(request, "tracker/track_user.html", context)
+def track_user_detail(request, share_code):
+
+    share_code = share_code.strip().upper()
+    profile = get_object_or_404(UserProfile, share_code=share_code)
+    target_user = profile.user
+
+    # Ensure CSV exists; if not, return an empty result consistent with stats()
+    if not os.path.exists(CSV_PATH):
+        entries = []
+        total_minutes = 0
+        daily_avg = 0
+        pet_mood = "N/A"
+        most_used = "N/A"
+        return render(request, "tracker/track_user_detail.html", {
+            "target_user": target_user,
+            "entries": entries,
+            "total_minutes": total_minutes,
+            "daily_avg": daily_avg,
+            "pet_mood": pet_mood,
+            "most_used": most_used,
+        })
+
+
+    df = pd.read_csv(CSV_PATH)
+
+
+    if "Code" not in df.columns:
+        df["Code"] = ""
+
+    df_user = df[df["Code"].astype(str).str.upper() == share_code]
+
+    if not df_user.empty:
+        if "Minutes" in df_user.columns:
+            df_user["Minutes"] = pd.to_numeric(df_user["Minutes"], errors="coerce").fillna(0).astype(int)
+        else:
+            df_user["Minutes"] = 0
+        if "Date" in df_user.columns:
+            df_user["Date"] = pd.to_datetime(df_user["Date"], errors="coerce").dt.date
+        else:
+
+            df_user["Date"] = pd.to_datetime("today").date()
+
+        # total minutes (match stats)
+        total_minutes = int(df_user["Minutes"].sum())
+
+        try:
+            daily_avg = round(df_user.groupby("Date")["Minutes"].sum().mean(), 2)
+        except Exception:
+            daily_avg = 0
+
+
+        if "Platform" in df_user.columns and not df_user["Platform"].isnull().all():
+
+            try:
+                most_used = df_user.groupby("Platform")["Minutes"].sum().idxmax()
+            except Exception:
+                most_used = "N/A"
+        else:
+            most_used = "N/A"
+
+        entries = [
+            {
+                "date": row["Date"].isoformat() if hasattr(row["Date"], "isoformat") else str(row["Date"]),
+                "platform": (row["Platform"] if "Platform" in row and pd.notna(row["Platform"]) else "N/A"),
+                "minutes": int(row["Minutes"])
+            }
+            for _, row in df_user.sort_values("Date", ascending=False).iterrows()
+        ]
+
+    else:
+        entries = []
+        total_minutes = 0
+        daily_avg = 0
+        most_used = "N/A"
+
+    if daily_avg < 60 and daily_avg > 0:
+        pet_mood = "Happy"
+    elif daily_avg < 120 and daily_avg > 0:
+        pet_mood = "Neutral"
+    elif daily_avg == 0:
+        pet_mood = "No Data"
+    else:
+        pet_mood = "Stressed"
+
+    context = {
+        "target_user": target_user,
+        "entries": entries,
+        "total_minutes": total_minutes,
+        "daily_avg": daily_avg,
+        "pet_mood": pet_mood,
+        "most_used": most_used,
+    }
+
+    return render(request, "tracker/track_user_detail.html", context)
+
+def friends_list(request):
+    return render(request, "tracker/friends_list.html")
