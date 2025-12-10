@@ -17,6 +17,7 @@ def get_pet_stats(request):
     """Unified logic for dopamine pet display and progress calculation."""
     focus_platform = request.session.get("focus_platform", None)
     points = request.session.get("points", 0)
+    pet_type = request.session.get("pet_type", 1)
     daily_avg = 0
 
     # Ensure CSV exists with correct columns
@@ -50,7 +51,7 @@ def get_pet_stats(request):
 
 
     # Evolution logic
-    pet_image, evolution_stage, progress = return_pet_info(1, points)
+    pet_image, evolution_stage, progress = return_pet_info(pet_type, points)
 
     return {
         "focus_platform": focus_platform,
@@ -74,7 +75,6 @@ def home(request):
         pd.DataFrame(columns=['Code', 'Date', 'Platform', 'Minutes']).to_csv(CSV_PATH, index=False)
 
     if request.method == "POST":
-        #get pet type
 
         # ----- SET FOCUS -----
         if 'set_focus' in request.POST:
@@ -90,7 +90,6 @@ def home(request):
             platform = request.POST.get("platform")
             minutes = request.POST.get("minutes")
             date_input = request.POST.get("date")
-            pet_type = request.POST.get("pet_type")
 
             if not date_input:
                 date_input =  date.today().isoformat()
@@ -146,6 +145,11 @@ def home(request):
                 request.session["points"] = points
                 request.session.modified = True
                 # -------------------------------------------
+        elif 'set_pet' in request.POST:
+            pet_type = int(request.POST.get("pet_type"))
+            request.session["pet_type"] = pet_type
+            request.session.modified = True
+            message = f"Pet type set to {pet_type}!"
 
     pet_stats = get_pet_stats(request)
     print(pet_stats)

@@ -83,7 +83,7 @@ def return_pet_info(pet, points): #takes in pet and points, returns image path
         else:
             print("points not within range")
     elif pet == 2:#phoenix
-        if 0 < points <= 10:
+        if 0 <= points <= 10:
             loader[0] = safe_image("phoenix_pet_egg.png")
             loader[1] = "Phoenix Egg"
             loader[2] = round((points / 10) * 100, 2)
@@ -110,7 +110,7 @@ def return_pet_info(pet, points): #takes in pet and points, returns image path
         else:
             print("points not within range")
     elif pet == 3:#slime
-        if 0 < points <= 10:
+        if 0 <= points <= 10:
             loader[0] = safe_image("slime_pet_egg.png")
             loader[1] = "Slime Egg"
             loader[2] = round((points / 10) * 100, 2)
