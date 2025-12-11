@@ -8,7 +8,7 @@ from .models import UserProfile, TimeEntry
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from .petLogic import *
-
+# Double checked imports
 CSV_PATH = os.path.join(settings.BASE_DIR, 'tracker', 'usage_data.csv')
 
 from django.contrib.auth.decorators import login_required
