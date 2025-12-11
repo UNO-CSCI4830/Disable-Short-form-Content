@@ -193,7 +193,7 @@ def stats(request):
         # --- Time Spent per Platform Data ---
         platform_group = df.groupby("Platform")["Minutes"].sum()
         platform_labels = list(platform_group.index)
-        platform_values = list(platform_group.values)
+        platform_values = [float(v) for v in platform_group.values]
 
         # --- Weekly Trend (last 7 days) ---
         df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
@@ -203,7 +203,7 @@ def stats(request):
         if not week_df.empty:
             daily_totals = week_df.groupby(df["Date"].dt.date)["Minutes"].sum()
             weekly_labels = [str(d) for d in daily_totals.index]
-            weekly_values = list(daily_totals.values)
+            weekly_values = [float(v) for v in daily_totals.values]
 
     context = {
         **pet_stats,
